@@ -1,11 +1,11 @@
 /* test case */
-int a = +2;
-int b = 1 - 2;
+int a;
+int b; 
 int var1;
 int array1[5];
 
 int assign1(int a){
-	a=2;
+	a = +2;
 	output(a);
 	return 1;
 }
