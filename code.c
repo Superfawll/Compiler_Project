@@ -1,29 +1,25 @@
-/* test case */
-int a;
-int b; 
-int var1;
-int array1[5];
 
-int assign1(int a){
-	a = +2;
+/* test case */
+int var1;
+int arra
 	output(a);
 	return 1;
 }
-void main(void){
-	int voida;
-	void int3;
-	int a;
-	int b;
-	a = 0;
-	b=1;/* comment */
-	var1 = 3;
-	if(a < var1 - 1){
-		a = a*3 + 1;
-		output(assign1(a));
-	}else
-		while ( a == 3 ){
-			int c;
-			c=45;
-			output(c-b);
+           
+void main(void){/**/
+	int vo
+	int c;
+	a = 1; /**/
+	b/*a*/= 1 *-2
+	/* */
+	int3[2] = (2 + 2) - ( 2);
+	c = 5 == 4;
+	/*a*/voida[1] =3 + (2);
+
+	if(a < var1 - 1)
+		a = a*3 + 1
+		output(assign1 a;
+	}else b);
 		}
-}EOF 
+}EOF /*ew;fm*//**/
+	/**/ /*anfre*/
