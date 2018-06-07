@@ -1,10 +1,10 @@
 
 /* test case */
 int var1;
-void a[10];
+int a[10];
 
 int output(int a){
-	void b;
+	int b;
 	int s[5];
 	return 1;
 }
@@ -17,26 +17,27 @@ void main(void){/**/
 	/* */
 	int3[2] = (2 + 2) - ( 2);
 	c = 5 == 4;
-	/*a*/voida[1] =3 + (2);
+	/*a*/inta[1] =3 + (2);
 
 	if(a)
 		if(b){
 			int a;
-			void x;
+			int x;
 			x = 1;
 			if(x){
 				int b;
 			}
-			else
+			else{
 				int a;
 				x = 4;
+			}
 		}
 		else{
 			int k[5];
 			int x;
 			while(k[0]){
 				int x;
-				void k;
+				int k;
 				int b[10];
 			}
 		}
