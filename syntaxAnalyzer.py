@@ -24,6 +24,16 @@ utilities.eofWatch = False
 tokenPopped = False
 utilities.isNum = False
 
+utilities.state1 = 0
+utilities.s1Ind = 0
+utilities.state2 = 0
+utilities.lastType = ""
+utilities.lastSymbol = ""
+utilities.lastNum = 0
+utilities.globalAddress = 100
+utilities.relAddress = 0
+utilities.currentNode = utilities.Node("", utilities.globalAddress, {}, None)
+
 # These information will be used to prevent the parser from panic mode loops!
 
 offset = 0
@@ -44,7 +54,7 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 						beginOfComment = i
 					if codeString[i] == "*" and codeString[i + 1] == "/" :
 						if beginOfComment < 0 :
-							print "ERROR, Comment end befor comment begin used!"
+							# "ERROR, Comment end befor comment begin used!"
 							quit()
 							done = True
 							break
@@ -71,30 +81,33 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 					if not utilities.matchToken("Keyword") :
 						if not utilities.matchToken("ID") :
 							if not utilities.matchToken("NUM") :
-								print "ERROR, String does not match any construct!"
+								# "ERROR, String does not match any construct!"
 								quit()
 
 			else :
-				print "ERROR, Code empty?!"
+				# "ERROR, Code empty?!"
 				quit()
 				done = True
 
 		if (utilities.tokenNum >= 1) : 
 			if (not tokenPopped) :
 				t = utilities.tokens[tokenIterator]
+
+				utilities.semantics(t)
+
 				action = actionTable[t][parsingStack[-1]]
-				print parsingStack[-1] + " and " + t + " yields " + action
+				# print parsingStack[-1] + " and " + t + " yields " + action
 				
 				if action == 'acc' :
-					print "Parse was successful!"
+					# "Parse was successful!"
 					break
 
 				if action == '' :
 					reductionSequenceFile.write("ERROR\n")
-					print "ERROR, Input and top of parser stack not compatible! Entering Panic Mode!"
+					# "ERROR, Input and top of parser stack not compatible! Entering Panic Mode!"
 
-					print utilities.tokens[:tokenIterator]
-					print parsingStack
+					# print utilities.tokens[:tokenIterator]
+					# print parsingStack
 
 					# if stackPop >= 2 :
 					# 	print "You Suck!"
@@ -120,12 +133,12 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 									isFound = True
 									break
 								else :
-									print "Found state will not be compatible, continuing!"
+									# print "Found state will not be compatible, continuing!"
 									tempStackPop = tempStackPop - 1
 									break
 
 						if (len(parsingStack) <= 2) :
-							print "ERROR, Stack was vacated and no proper follow found!"
+							# print "ERROR, Stack was vacated and no proper follow found!"
 							quit()
 
 						if (not isFound) :
@@ -135,7 +148,7 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 						else :
 							break
 					
-					print "Proper state in the stack found! Now finding suitable input!"
+					# print "Proper state in the stack found! Now finding suitable input!"
 					for entry in utilities.nonTerminals :
 						if gotoTable[entry][parsingStack[- 1]] :
 							gotoSubSet.append(entry)
@@ -147,7 +160,7 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 						tempOffset = tempOffset - 1
 
 					if (len(gotoSubSet) == 0) :
-						print "ERROR, stack has to pop more states and non-Terminals to reach a viable start!"
+						# "ERROR, stack has to pop more states and non-Terminals to reach a viable start!"
 						# print parsingStack
 						stackPop = stackPop + 1
 						offset = 0
@@ -161,7 +174,7 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 					while (not (utilities.tokens[tokenIterator] in followSet[gotoSubSet[iterator]])) :
 						if (iterator == len(gotoSubSet) - 1) :
 							if (utilities.tokens[tokenIterator] == '$') :
-								print "ERROR, no viable follow for any terminals found! Quitting;"
+								# "ERROR, no viable follow for any terminals found! Quitting;"
 								quit()
 							iterator = 0
 							utilities.tokens.pop(tokenIterator)
@@ -172,7 +185,7 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 
 					if tokenPopped :
 						continue
-					print "Proper input in the input stream found! Continuing parsing!"
+					# "Proper input in the input stream found! Continuing parsing!"
 
 					parsingStack.append(gotoSubSet[iterator])
 					parsingStack.append(gotoTable[gotoSubSet[iterator]][parsingStack[-2]])
@@ -187,7 +200,7 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 					previousState = ''
 					previousToken = ''
 					stackPop = 0
-					print "Input shift operation done, going to state: " + str(action[1:])
+					# "Input shift operation done, going to state: " + str(action[1:])
 				if action[0] == 'r' :
 					reductionSequenceFile.write(action[1:] + "\n")
 					r = rules[int(action[1:]) - 1]
@@ -199,7 +212,7 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 							parsingStack = ['0']
 					parsingStack.append(r[0])
 					parsingStack.append(gotoTable[r[0]][parsingStack[-2]])
-					print "Reduce operation done with rule: " + str(int(action[1:])) + " !"
+					# "Reduce operation done with rule: " + str(int(action[1:])) + " !"
 			
 			elif utilities.tokenNum > 1 :	
 				tokenPopped = False
@@ -207,7 +220,7 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 				while (not (utilities.tokens[tokenIterator] in followSet[gotoSubSet[iterator]])) :
 					if (iterator == len(gotoSubSet) - 1) :
 						if (utilities.tokens[tokenIterator] == '$') :
-							print "ERROR, no viable follow for any terminals found! Quitting;"
+							# "ERROR, no viable follow for any terminals found! Quitting;"
 							quit()
 						iterator = 0
 						utilities.tokens.pop(tokenIterator)
@@ -218,7 +231,7 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 
 				if tokenPopped :
 					continue
-				print "//////Proper input in the input stream found! Continuing parsing!"
+				# "//////Proper input in the input stream found! Continuing parsing!"
 
 				parsingStack.append(gotoSubSet[iterator])
 				parsingStack.append(gotoTable[gotoSubSet[iterator]][parsingStack[-2]])
@@ -226,6 +239,6 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 				continue
 			
 
-print str(utilities.tokens) + "\nThis is the understood language flow of the program!"
+# str(utilities.tokens) + "\nThis is the understood language flow of the program!"
 
 

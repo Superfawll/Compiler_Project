@@ -9,10 +9,37 @@ terminals = ['$',')','(','*','+',',','-',';','<','=','[',']','e','f','g','i','n'
 
 contiguousSubString = ""
 tokens = []
-symbolTable = {}
 eofWatch = False
 tokenNum = 0
 isNum = False
+
+class Node:
+    def __init__(self, n, b, s, p):
+        self.name = n
+        self.base = b
+        self.symbolTable = s
+        self.parent = p
+        self.children = []
+
+    def printSubTree(self, tn):
+    	print "********************.{}.{}".format(self.name, self.base)
+    	tabs = ""
+    	for ttn in range(tn):
+    		tabs = tabs + "\t"
+    	for k in self.symbolTable.keys():
+    		print tabs + "{}: {}, {}, {}".format(symbolTable[k][0], symbolTable[k][1], symbolTable[k][2])
+    	for n in self.children:
+    		n.printSubTree(tn + 1)
+
+state1 = 0
+s1Ind = 0
+state2 = 0
+lastType = ""
+lastSymbol = ""
+lastNum = 0
+globalAddress = 100
+relAddress = 0
+currentNode = Node("", globalAddress, {}, None)
 
 mapping = { "else": "e",
 			"if": "f",
@@ -24,10 +51,12 @@ mapping = { "else": "e",
 
 numSignIndicator = ['[','(','*','=',',','+','-','<','q','e','r']
 
+
+
 def matchToken(candid):
 	global contiguousSubString
 	global tokens
-	global symbolTable
+	global lastSymbol
 	global eofWatch
 	global tokenNum
 	global isNum
@@ -74,7 +103,8 @@ def matchToken(candid):
 			tag = "i" if candid == "ID" else "n"
 			tokens.append(tag)
 			tokenNum = tokenNum + 1
-			symbolTable[matched] = tag
+			if candid == "ID": lastSymbol = matched
+			if candid == "NUM": lastNum = int(matched)
 			contiguousSubString = re.sub(pattern, "", contiguousSubString)
 			return True
 		else :
@@ -147,4 +177,128 @@ def checkPrev(s, SS):
 			matches = False
 
 	return matches
+
+
+def semantics(t):
+	global s1Ind
+	global state1
+	global currentNode
+
+	print "token = .{} and state1 = .{}".format(t, state1)
+
+	if state1 == 0:
+		state1 = 1 if (t == "g" or t == "v") else (9 if t == "z" else 0)
+
+	elif state1 == 1:
+		state1 = 2 if t == "i" else -1
+
+	elif state1 == 2: 
+		if t == "(":
+			node = Node(lastSymbol, globalAddress, {}, currentNode)
+			currentNode.children.append(node)
+			currentNode = node
+			relAddress = 0
+			state1 = 3
+		else:
+			state1 = 0
+
+	elif state1 == 3:
+		state1 = 4 if t == ")" else 3
+
+	elif state1 == 4:
+		if t == "{":
+			state1 = 5
+			s1Ind = 0
+		else: state1 = -1
+
+	elif state1 == 5:
+		if t == "{":
+			node = Node("", globalAddress, {}, currentNode)
+			currentNode.children.append(node)
+			currentNode = node
+			relAddress = 0
+			s1Ind = s1Ind + 1
+		elif t == "}":
+			currentNode = currentNode.parent
+			if s1Ind == 0:
+				state1 = 0
+			else:
+				s1Ind = s1Ind - 1
+		else:
+			state1 = 6 if (t == "f" or t == "w") else (8 if t == "e" else 5)
+
+	elif state1 == 6:
+		state1 = 7 if t == "(" else -1
+
+	elif state1 == 7:
+		if t == ")":
+			state1 = 8
+
+	elif state1 == 8:
+		if t == "{":
+			node = Node("", globalAddress, {}, currentNode)
+			currentNode.children.append(node)
+			currentNode = node
+			relAddress = 0
+			state1 = 5
+			s1Ind = s1Ind + 1
+		elif t == "f" or t == "w":
+			state1 = 6
+		elif t != "e":
+			state1 = 5
+
+	print "state1 = .{}".format(state1)
+	stat = "Syntax Error!" if state1 == -1 else addVars(t)
+	if stat == "OK!": currentNode.printSubTree(0)
+	else:
+		print stat
+		quit()
+
+
+def addVars(t):
+	global state2
+	global lastType
+	global currentNode
+	global lastSymbol
+	global lastNum
+	global globalAddress
+
+	print "token = .{} and state2 = .{}".format(t, state2)
+
+	if state2 == 0:
+		if t == "g" or t == "v":
+			state2 = 1
+			lastType = t
+			lastNum = 1
+
+	elif state2 == 1:
+		state2 = 2 if t == "i" else 0
+
+	elif state2 == 2:
+		if t == "(":
+			state2 = 0
+		elif t == "[":
+			state2 = 3
+		elif t == ";" or t == ")" or t == ",":
+			if lastSymbol in currentNode.symbolTable:
+				return "Duplicate Variable Definition!"
+			currentNode.symbolTable[lastSymbol] = [relAddress, lastType, lastNum]
+			size = lastNum * (32 if lastType == "g" else 1)
+			globalAddress = globalAddress + size
+			relAddress = relAddress + size
+			state2 = 0
+		else:
+			state2 = -1
+
+	elif state2 == 3:
+		state2 = 4 if t == "n" else -1
+
+	elif state2 == 4:
+		state2 = 2 if t == "]" else -1
+
+	print "state2 = .{}".format(state2)
+	return "Syntax Error!" if state2 == -1 else "OK!"
+
+
+
 
