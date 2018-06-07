@@ -29,7 +29,7 @@ utilities.s1Ind = 0
 utilities.state2 = 0
 utilities.lastType = ""
 utilities.lastSymbol = ""
-utilities.lastNum = 0
+utilities.lastNum = 1
 utilities.globalAddress = 100
 utilities.relAddress = 0
 utilities.currentNode = utilities.Node("", utilities.globalAddress, {}, None)
@@ -95,7 +95,7 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 			if (not tokenPopped) :
 				t = utilities.tokens[tokenIterator]
 
-				if (t[0] == 'n') : utilities.lastNum = t[1] 
+				if (t[0] == 'n') : utilities.lastNum = int(t[1])
 				if (t[0] == 'i') : utilities.lastSymbol = t[1]
 
 				action = actionTable[t[0]][parsingStack[-1]]

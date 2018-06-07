@@ -41,7 +41,7 @@ s1Ind = 0
 state2 = 0
 lastType = ""
 lastSymbol = ""
-lastNum = 0
+lastNum = 1
 globalAddress = 100
 relAddress = 0
 currentNode = Node("", globalAddress, {}, None)
@@ -186,7 +186,7 @@ def checkPrev(s, SS):
 	return matches
 
 
-def semantics(t):
+def semantics(token):
 	global s1Ind
 	global state1
 	global currentNode
@@ -195,8 +195,10 @@ def semantics(t):
 	global lastSymbol
 	global lastNum
 
+	t = token[0]
+
 	# print "token = {} and state1 = {}".format(t, state1)
-	print "{}\t{}\t{}".format(t, lastSymbol, lastNum)
+	# print "{}\t{}\t{}".format(t, lastSymbol, lastNum)
 
 	if state1 == 0:
 		state1 = 1 if (t == "g" or t == "v") else (9 if t == "z" else 0)
