@@ -95,7 +95,10 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 			if (not tokenPopped) :
 				t = utilities.tokens[tokenIterator]
 
-				action = actionTable[t][parsingStack[-1]]
+				if (t[0] == 'n') : utilities.lastNum = t[1] 
+				if (t[0] == 'i') : utilities.lastSymbol = t[1]
+
+				action = actionTable[t[0]][parsingStack[-1]]
 				# print parsingStack[-1] + " and " + t + " yields " + action
 				
 				if action == 'acc' :
@@ -112,13 +115,13 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 					# if stackPop >= 2 :
 					# 	print "You Suck!"
 					# 	quit()
-					if (previousState == parsingStack[-1] and previousToken == t) : 
+					if (previousState == parsingStack[-1] and previousToken == t[0]) : 
 						offset = offset + 1
 					else :
 						offset = 0
 
 					previousState = parsingStack[-1]
-					previousToken = t
+					previousToken = t[0]
 					
 					gotoSubSet = []
 
@@ -171,9 +174,9 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 
 					iterator = 0
 
-					while (not (utilities.tokens[tokenIterator] in followSet[gotoSubSet[iterator]])) :
+					while (not (utilities.tokens[tokenIterator][0] in followSet[gotoSubSet[iterator]])) :
 						if (iterator == len(gotoSubSet) - 1) :
-							if (utilities.tokens[tokenIterator] == '$') :
+							if (utilities.tokens[tokenIterator][0] == '$') :
 								# "ERROR, no viable follow for any terminals found! Quitting;"
 								quit()
 							iterator = 0
@@ -196,12 +199,14 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 					parsingStack.append(t)
 					parsingStack.append(action[1:])
 
+					# print utilities.tokens[tokenIterator]
+
 					stat = utilities.semantics(utilities.tokens[tokenIterator])
 					if stat != "OK!":
 						print stat
 						utilities.root.printSubTree(0)
 						quit()
-						
+ 						
 					tokenIterator = tokenIterator + 1
 					utilities.tokenNum = utilities.tokenNum - 1
 					previousState = ''
@@ -224,9 +229,9 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 			elif utilities.tokenNum > 1 :	
 				tokenPopped = False
 				iterator = 0
-				while (not (utilities.tokens[tokenIterator] in followSet[gotoSubSet[iterator]])) :
+				while (not (utilities.tokens[tokenIterator][0] in followSet[gotoSubSet[iterator]])) :
 					if (iterator == len(gotoSubSet) - 1) :
-						if (utilities.tokens[tokenIterator] == '$') :
+						if (utilities.tokens[tokenIterator][0] == '$') :
 							# "ERROR, no viable follow for any terminals found! Quitting;"
 							quit()
 						iterator = 0

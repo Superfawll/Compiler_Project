@@ -85,15 +85,15 @@ def matchToken(candid):
 				tokens[len(tokens) - 1] = "q"
 			else :
 				if sKey in mapping.keys() :
-					tokens.append(mapping[sKey])
+					tokens.append((mapping[sKey], sKey))
 					tokenNum = tokenNum + 1
 				else :
-					tokens.append(sKey)
+					tokens.append((sKey, sKey))
 					tokenNum = tokenNum + 1
 			contiguousSubString = re.sub(keyword, "", contiguousSubString)
 			if sKey == "EOF" :
 				eofWatch = True
-				tokens.append('$')
+				tokens.append(('$', 'none'))
 				tokenNum = tokenNum + 1
 			return True
 		else :
@@ -108,10 +108,10 @@ def matchToken(candid):
 		if matched :
 			matched = matched.group()
 			tag = "i" if candid == "ID" else "n"
-			tokens.append(tag)
+			tokens.append((tag, matched))
 			tokenNum = tokenNum + 1
-			if candid == "ID": lastSymbol = matched
-			if candid == "NUM": lastNum = int(matched)
+			# if candid == "ID": lastSymbol = matched
+			# if candid == "NUM": lastNum = int(matched)
 			contiguousSubString = re.sub(pattern, "", contiguousSubString)
 			return True
 		else :
