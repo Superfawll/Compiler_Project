@@ -11,7 +11,7 @@ int output(int a){
 }
            
 void main(void){/**/
-	int vo
+	int vo;
 	int c;
 	a = 1; /**/
 	b/*a*/= 1 *-2

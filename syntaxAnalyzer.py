@@ -33,6 +33,7 @@ utilities.lastNum = 0
 utilities.globalAddress = 100
 utilities.relAddress = 0
 utilities.currentNode = utilities.Node("", utilities.globalAddress, {}, None)
+utilities.root = utilities.currentNode
 
 # These information will be used to prevent the parser from panic mode loops!
 
@@ -43,6 +44,7 @@ previousToken = ''
 
 with open("results/reductions.txt", "w") as reductionSequenceFile :
 	while True :
+
 		if (codeString != "" and not done):
 			current = r"\A\S*(\s+|\Z)"
 			utilities.contiguousSubString = re.match(current, codeString)
@@ -92,8 +94,6 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 		if (utilities.tokenNum >= 1) : 
 			if (not tokenPopped) :
 				t = utilities.tokens[tokenIterator]
-
-				utilities.semantics(t)
 
 				action = actionTable[t][parsingStack[-1]]
 				# print parsingStack[-1] + " and " + t + " yields " + action
@@ -195,6 +195,13 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 				if action[0] == 's' :
 					parsingStack.append(t)
 					parsingStack.append(action[1:])
+
+					stat = utilities.semantics(utilities.tokens[tokenIterator])
+					if stat != "OK!":
+						print stat
+						utilities.root.printSubTree(0)
+						quit()
+						
 					tokenIterator = tokenIterator + 1
 					utilities.tokenNum = utilities.tokenNum - 1
 					previousState = ''
@@ -238,6 +245,7 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 
 				continue
 			
+utilities.root.printSubTree(0)
 
 # str(utilities.tokens) + "\nThis is the understood language flow of the program!"
 

@@ -22,14 +22,19 @@ class Node:
         self.children = []
 
     def printSubTree(self, tn):
-    	print "********************.{}.{}".format(self.name, self.base)
-    	tabs = ""
-    	for ttn in range(tn):
-    		tabs = tabs + "\t"
-    	for k in self.symbolTable.keys():
-    		print tabs + "{}: {}, {}, {}".format(symbolTable[k][0], symbolTable[k][1], symbolTable[k][2])
+    	print "{}********************{}*{}".format(tn, self.name, self.base)
+    	print self.symbolTable
+    	# for k in self.symbolTable.keys():
+    		# print tabs + "{}: {}, {}, {}".format(self.symbolTable[k][0], self.symbolTable[k][1], self.symbolTable[k][2])
     	for n in self.children:
     		n.printSubTree(tn + 1)
+
+    def setSymbol(self, ls, ra, lt, ln):
+    	self.symbolTable[ls] = [ra, lt, ln]
+
+    def duplicate(self, symbol):
+    	return symbol in self.symbolTable
+
 
 state1 = 0
 s1Ind = 0
@@ -40,6 +45,7 @@ lastNum = 0
 globalAddress = 100
 relAddress = 0
 currentNode = Node("", globalAddress, {}, None)
+root = currentNode
 
 mapping = { "else": "e",
 			"if": "f",
@@ -57,6 +63,7 @@ def matchToken(candid):
 	global contiguousSubString
 	global tokens
 	global lastSymbol
+	global lastNum
 	global eofWatch
 	global tokenNum
 	global isNum
@@ -183,8 +190,12 @@ def semantics(t):
 	global s1Ind
 	global state1
 	global currentNode
+	global globalAddress
+	global relAddress
+	global lastSymbol
+	global lastNum
 
-	print "token = .{} and state1 = .{}".format(t, state1)
+	# print "token = {} and state1 = {}".format(t, state1)
 
 	if state1 == 0:
 		state1 = 1 if (t == "g" or t == "v") else (9 if t == "z" else 0)
@@ -247,12 +258,9 @@ def semantics(t):
 		elif t != "e":
 			state1 = 5
 
-	print "state1 = .{}".format(state1)
-	stat = "Syntax Error!" if state1 == -1 else addVars(t)
-	if stat == "OK!": currentNode.printSubTree(0)
-	else:
-		print stat
-		quit()
+	# print "state1 = {}".format(state1)
+	# print "*****"
+	return "Syntax Error in Variable Scoping!" if state1 == -1 else addVars(t)
 
 
 def addVars(t):
@@ -262,13 +270,14 @@ def addVars(t):
 	global lastSymbol
 	global lastNum
 	global globalAddress
+	global relAddress
 
-	print "token = .{} and state2 = .{}".format(t, state2)
+	# print "token = {} and state2 = {}".format(t, state2)
 
 	if state2 == 0:
 		if t == "g" or t == "v":
 			state2 = 1
-			lastType = t
+			lastType = "int" if t == "g" else "void"
 			lastNum = 1
 
 	elif state2 == 1:
@@ -280,10 +289,10 @@ def addVars(t):
 		elif t == "[":
 			state2 = 3
 		elif t == ";" or t == ")" or t == ",":
-			if lastSymbol in currentNode.symbolTable:
-				return "Duplicate Variable Definition!"
-			currentNode.symbolTable[lastSymbol] = [relAddress, lastType, lastNum]
-			size = lastNum * (32 if lastType == "g" else 1)
+			if currentNode.duplicate(lastSymbol):
+				return "Duplicate Variable Definition: {} already exists in this scope!".format(lastSymbol)
+			currentNode.setSymbol(lastSymbol, relAddress, lastType, lastNum)
+			size = lastNum * (32 if lastType == "int" else 1)
 			globalAddress = globalAddress + size
 			relAddress = relAddress + size
 			state2 = 0
@@ -296,8 +305,9 @@ def addVars(t):
 	elif state2 == 4:
 		state2 = 2 if t == "]" else -1
 
-	print "state2 = .{}".format(state2)
-	return "Syntax Error!" if state2 == -1 else "OK!"
+	# print "state2 = {}".format(state2)
+	# print "*****"
+	return "Syntax Error in Variable Definition!" if state2 == -1 else "OK!"
 
 
 
