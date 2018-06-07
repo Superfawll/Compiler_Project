@@ -326,5 +326,12 @@ def addVars(t):
 	return "" if state2 == -1 else "OK!"
 
 
+def findVar(symbol, node):
+  n = node
+  while n != None:
+    if symbol in n.symbolTable.keys()
+      return [n.name, n.base, n.symbolTable[symbol]]
+    else n = n.parent
 
+  return None
 
