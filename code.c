@@ -4,7 +4,6 @@ int var1;
 void a[10];
 
 int output(int a){
-	void a;
 	void b;
 	int s[5];
 	return 1;
@@ -29,8 +28,8 @@ void main(void){/**/
 				int b;
 			}
 			else
-				x = 4;
 				int a;
+				x = 4;
 		}
 		else{
 			int k[5];
