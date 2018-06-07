@@ -196,6 +196,7 @@ def semantics(t):
 	global lastNum
 
 	# print "token = {} and state1 = {}".format(t, state1)
+	print "{}\t{}\t{}".format(t, lastSymbol, lastNum)
 
 	if state1 == 0:
 		state1 = 1 if (t == "g" or t == "v") else (9 if t == "z" else 0)
