@@ -34,6 +34,7 @@ utilities.globalAddress = 100
 utilities.relAddress = 0
 utilities.currentNode = utilities.Node("", utilities.globalAddress, {}, None)
 utilities.root = utilities.currentNode
+utilities.functions = {}
 
 # These information will be used to prevent the parser from panic mode loops!
 

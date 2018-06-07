@@ -29,8 +29,8 @@ class Node:
     	for n in self.children:
     		n.printSubTree(tn + 1)
 
-    def setSymbol(self, ls, ra, lt, ln):
-    	self.symbolTable[ls] = [ra, lt, ln]
+    def setSymbol(self, ls, ra, ln):
+    	self.symbolTable[ls] = [ra, ln]
 
     def duplicate(self, symbol):
     	return symbol in self.symbolTable
@@ -46,6 +46,7 @@ globalAddress = 100
 relAddress = 0
 currentNode = Node("", globalAddress, {}, None)
 root = currentNode
+functions = {}
 
 mapping = { "else": "e",
 			"if": "f",
@@ -207,7 +208,15 @@ def semantics(token):
 		state1 = 2 if t == "i" else -1
 
 	elif state1 == 2: 
+		if "main" in functions.keys() and lastSymbol != "main":
+				return "\'{}\'' Is Defined After \'main\'".format(lastSymbol)
+
 		if t == "(":
+			if lastSymbol in functions.keys():
+				return "Duplicate Function Definition: \'{}\'' Already Exists!".format(lastSymbol)
+			else:
+				functions[lastSymbol] = [globalAddress, lastType]
+
 			node = Node(lastSymbol, globalAddress, {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
@@ -263,7 +272,7 @@ def semantics(token):
 
 	# print "state1 = {}".format(state1)
 	# print "*****"
-	return "Syntax Error in Variable Scoping!" if state1 == -1 else addVars(t)
+	return "" if state1 == -1 else addVars(t)
 
 
 def addVars(t):
@@ -293,12 +302,16 @@ def addVars(t):
 			state2 = 3
 		elif t == ";" or t == ")" or t == ",":
 			if currentNode.duplicate(lastSymbol):
-				return "Duplicate Variable Definition: {} already exists in this scope!".format(lastSymbol)
-			currentNode.setSymbol(lastSymbol, relAddress, lastType, lastNum)
-			size = lastNum * (32 if lastType == "int" else 1)
+				return "Duplicate Variable Definition: \'{}\'' Already Exists In This Scope!".format(lastSymbol)
+			if lastType == "void":
+				return "Variable \'{}\' Can Not Be Defined Of Type \'void\'".format(lastSymbol)
+			currentNode.setSymbol(lastSymbol, relAddress, lastNum)
+			size = lastNum * 32
 			globalAddress = globalAddress + size
 			relAddress = relAddress + size
 			state2 = 0
+			if t == ")":
+				functions[currentNode.name].append(currentNode.symbolTable)
 		else:
 			state2 = -1
 
@@ -310,7 +323,7 @@ def addVars(t):
 
 	# print "state2 = {}".format(state2)
 	# print "*****"
-	return "Syntax Error in Variable Definition!" if state2 == -1 else "OK!"
+	return "" if state2 == -1 else "OK!"
 
 
 
