@@ -306,7 +306,7 @@ def addVars(t):
 			if lastType == "void":
 				return "Variable \'{}\' Can Not Be Defined Of Type \'void\'".format(lastSymbol)
 			currentNode.setSymbol(lastSymbol, relAddress, lastNum)
-			size = lastNum * 32
+			size = lastNum * 4
 			globalAddress = globalAddress + size
 			relAddress = relAddress + size
 			state2 = 0
