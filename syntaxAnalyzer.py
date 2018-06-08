@@ -203,10 +203,10 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 					# print utilities.tokens[tokenIterator]
 
 					stat = utilities.semantics(utilities.tokens[tokenIterator])
-					if stat != "OK!":
-						print stat
-						utilities.root.printSubTree(0)
-						quit()
+					# if stat != "OK!":
+					# 	print stat
+					# 	utilities.root.printSubTree(0)
+					# 	quit()
  						
 					tokenIterator = tokenIterator + 1
 					utilities.tokenNum = utilities.tokenNum - 1
@@ -251,7 +251,9 @@ with open("results/reductions.txt", "w") as reductionSequenceFile :
 
 				continue
 			
-utilities.root.printSubTree(0)
+# utilities.root.printSubTree(0)
+# print "\n\n"
+print utilities.functions
 
 # str(utilities.tokens) + "\nThis is the understood language flow of the program!"
 

@@ -311,7 +311,7 @@ def addVars(t):
 			relAddress = relAddress + size
 			state2 = 0
 			if t == ")":
-				functions[currentNode.name].append(currentNode.symbolTable)
+				functions[currentNode.name].append(currentNode.symbolTable.copy())
 		else:
 			state2 = -1
 
@@ -326,5 +326,12 @@ def addVars(t):
 	return "" if state2 == -1 else "OK!"
 
 
+def findVar(symbol, node):
+  n = node
+  while n != None:
+    if symbol in n.symbolTable.keys()
+      return [n.name, n.base, n.symbolTable[symbol]]
+    else n = n.parent
 
+  return None
 
