@@ -20,18 +20,7 @@ utilities.eofWatch = False
 tokenPopped = False
 utilities.isNum = False
 
-utilities.state1 = 0
-utilities.s1Ind = 0
-utilities.state2 = 0
-utilities.lastType = ""
-utilities.lastSymbol = ""
-utilities.lastNum = 1
-utilities.relAddress = 0
-utilities.relArrAddress = 1300
-utilities.tempAddress = 301
-utilities.currentNode = utilities.Node("", {}, None)
 utilities.root = utilities.currentNode
-utilities.functions = {'output':['void', -1, {'x': [0, 1]}]}
 
 # These information will be used to prevent the parser from panic mode loops!
 

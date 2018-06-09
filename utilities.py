@@ -49,9 +49,7 @@ lastNum = 1
 relAddress = 0
 relArrAddress = 1300
 tempAddress = 301
-
 currentNode = Node("", {}, None)
-root = currentNode
 functions = {'output':['void', -1, {'x': [0, 1]}]}
 
 semanticStack = []
@@ -215,6 +213,9 @@ def semantics(token):
 	global lastNum
 
 	t = token[0]
+
+	if t == "z" and not ("main" in function.keys()):
+		return "The \'main\' function has not been defined!"
 
 	if state1 == 0:
 		state1 = 1 if (t == "g" or t == "v") else (9 if t == "z" else 0)
