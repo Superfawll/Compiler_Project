@@ -16,6 +16,7 @@ int function2(void) {
 		b[a] = 23 - a;
 		a = a + 1;
 	}
+	/*a = 25;*/
 }
         
 void main(void){/**/

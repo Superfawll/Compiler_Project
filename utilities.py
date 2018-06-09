@@ -371,6 +371,7 @@ def codeGen(nonTerminal, token):
 		programBlockPointer = programBlockPointer + 1
 		programBlock.append('')
 	elif nonTerminal == 'd' :
+
 		programBlock[semanticStack[-1]] = ['JPF',semanticStack[-2],programBlockPointer + 1,'']
 		semanticStack.pop()
 		semanticStack.pop()
@@ -390,6 +391,10 @@ def codeGen(nonTerminal, token):
 		programBlock.append('')
 	elif nonTerminal == 'l' :
 		programBlock[semanticStack[-1]] = ['JPF',semanticStack[-2],programBlockPointer + 1,'']
+		print programBlock[semanticStack[-1]]
+		with open('program.txt', 'w') as program :
+			for item in programBlock:
+  				print>>program, item
 		programBlock.append(['JP',semanticStack[-3],'',''])
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.pop()
@@ -418,6 +423,8 @@ def codeGen(nonTerminal, token):
 		# print "The semantic stack is at: " + str(semanticStack)
 		# print (findVar(token[1], currentNode))[2][1]
 		i = (findVar(token[1], currentNode))[1][0]
+		semanticStack.append(programBlockPointer)
+		# print programBlockPointer
 		programBlock.append(['ASSIGN','#' + str(i),temp,''])
 		programBlock.append(['ADD',temp,500,temp1])
 		programBlockPointer = programBlockPointer + 2
@@ -427,16 +434,23 @@ def codeGen(nonTerminal, token):
 		tempAddr1 = getTemp()
 		tempAddr2 = getTemp()
 		gett2 = getTemp()
+		print "The semantic stack is at: " + str(semanticStack)
+		pointer = semanticStack[-3]
+		print pointer
+		print "The semantic stack is at: " + str(semanticStack)
 		temp = semanticStack.pop()
+		print "The semantic stack is at: " + str(semanticStack)
+		semanticStack.pop()
+		# print temp
+		# print pointer
+		# print "The semantic stack is at: " + str(semanticStack)
 		# if (not isinstance(temp, int)) :
 		# 	if ('#' in temp) :
 		# 		temp = temp.replace("#", "")
-		programBlock.pop()
-		semanticStack.pop()
-		wrongAddresses = programBlock.pop()
+		# programBlock.pop()
+		wrongAddresses = programBlock[pointer]
 		# print wrongAddresses
 		wrongAddresses[1] = wrongAddresses[1].replace('#','')
-		programBlock.append(wrongAddresses)
 		# programBlock.pop()
 		# print "The semantic stack is at: " + str(semanticStack)
 		# programBlock.append(['ASSIGN',wrongAddresses[2],tempAddr1,''])
@@ -487,6 +501,10 @@ def codeGen(nonTerminal, token):
 	# 	# localAddressBase = 100
 	# 	# tempAddressBase = 500
 	# 	# arrayAddressBase = 1000
+	elif nonTerminal == 'V' :
+		# print semanticStack
+		semanticStack.pop(-2)
+		# print semanticStack
 
 
 
