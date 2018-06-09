@@ -193,9 +193,9 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 					# print utilities.tokens[utilities.tokenIterator]
 
 					stat = utilities.semantics(utilities.tokens[utilities.tokenIterator])
-					if stat != "OK!":
+					if stat != "OK!" and stat != "":
 						print stat
-						utilities.root.printSubTree(0)
+						# utilities.root.printSubTree(0)
 						quit()
  						
 					utilities.tokenIterator = utilities.tokenIterator + 1

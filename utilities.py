@@ -14,11 +14,13 @@ tokenNum = 0
 isNum = False
 
 class Node:
-    def __init__(self, n, s, p):
+    def __init__(self, fun, n, s, p):
+    	self.function = fun
         self.name = n
         self.symbolTable = s
         self.parent = p
         self.children = []
+        self.retured = False
 
     def printSubTree(self, tn):
     	print "{} ******************** {}".format(tn, self.name)
@@ -202,7 +204,24 @@ def getFollowSet(file):
 
 	return followSet
 
+
 def semantics(token):
+	t = token[0]
+
+	if t == "z" and not ("main" in functions.keys()):
+		return "The \'main\' function has not been defined!"
+
+	stat = scopeChecking(t)
+	if stat == "OK!":
+		stat = addVars(t)
+		if stat == "OK!":
+			stat = funTypeChecking(t)
+			return stat
+		else: return stat
+	else: return stat
+
+
+def scopeChecking(t):
 	global scopeCounter
 	global state1
 	global currentNode
@@ -212,13 +231,10 @@ def semantics(token):
 	global lastSymbol
 	global lastNum
 
-	t = token[0]
-
-	if t == "z" and not ("main" in functions.keys()):
-		return "The \'main\' function has not been defined!"
-
 	if state1 == 0:
 		state1 = 1 if (t == "g" or t == "v") else (9 if t == "z" else 0)
+		if t == "r":
+			currentNode.returned = True
 
 	elif state1 == 1:
 		state1 = 2 if t == "i" else -1
@@ -235,7 +251,7 @@ def semantics(token):
 			else:
 				functions[lastSymbol] = [lastType, -1]
 			# Inserting the new identifier inside of the symbol table linked-list
-			node = Node(lastSymbol, {}, currentNode)
+			node = Node(True, lastSymbol, {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
 			relAddress = 0
@@ -257,13 +273,15 @@ def semantics(token):
 	elif state1 == 5:
 		if t == "{":
 			# Inserting the new scope inside of the symbol table linked-list
-			node = Node("", {}, currentNode)
+			node = Node(False, currentNode.name, {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
 			scopeCounter = scopeCounter + 1
 		elif t == "}":
 			currentNode = currentNode.parent
 			if scopeCounter == 0:
+				if not currentNode.returned and functions[currentNode.name].type == "int":
+					return "Function \'{}\' Has Not Retured A Value".format(currentNode.name)
 				state1 = 0
 			else:
 				scopeCounter = scopeCounter - 1
@@ -279,7 +297,7 @@ def semantics(token):
 
 	elif state1 == 8:
 		if t == "{":
-			node = Node("", {}, currentNode)
+			node = Node(False, currentNode.name, {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
 			state1 = 5
@@ -289,7 +307,7 @@ def semantics(token):
 		elif t != "e":
 			state1 = 5
 
-	return "" if state1 == -1 else addVars(t)
+	return "" if state1 == -1 else "OK!"
 
 
 def addVars(t):
@@ -339,6 +357,28 @@ def addVars(t):
 		state2 = 2 if t == "]" else -1
 
 	return "" if state2 == -1 else "OK!"
+
+
+def funTypeChecking(t):
+	global state3
+
+	if state3 == 0:
+		if t == "r":
+			state3 = 1
+
+	elif state3 == 1:
+		if t == ";":
+			if functions[currentNode.name][0] == "int"
+				return "Function \'{}\' Must Return A Value of Type \'int\'".format(currentNode.name)
+			state3 = 0;
+		else:
+			state3 = 2;
+
+	elif state3 == 2:
+		if t == ";"
+			if functions[currentNode.name][0] == "void"
+				return "Function \'{}\' Must Return A Value of Type \'void\'".format(currentNode.name)
+		state3 = 0	
 
 
 def findVar(symbol, node):
