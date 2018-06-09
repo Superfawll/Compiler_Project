@@ -412,26 +412,39 @@ def codeGen(nonTerminal, token):
 		result = semanticStack.pop()
 		semanticStack.append(result)
 	elif nonTerminal == 'r1' :
-		print token[1] + " This is the token which is going to be pushed inside of the semantic stack!"
+		temp = getTemp()
+		temp1 = getTemp()
+		# print token[1] + " This is the token which is going to be pushed inside of the semantic stack!"
 		print "The semantic stack is at: " + str(semanticStack)
-		print token[1]
-		print (findVar(token[1], currentNode))[1][1]
-		i = int((findVar(token[1], currentNode))[1][0])
-		semanticStack.append(i)
+		# print (findVar(token[1], currentNode))[2][1]
+		i = (findVar(token[1], currentNode))[1][0]
+		programBlock.append(['ASSIGN','#' + str(i),temp,''])
+		programBlock.append(['ADD',temp,500,temp1])
+		programBlockPointer = programBlockPointer + 2
+		semanticStack.append('@' + str(temp1))
+		print semanticStack[-1]
 	elif nonTerminal == 'p' :
 		tempAddr1 = getTemp()
 		tempAddr2 = getTemp()
+		gett2 = getTemp()
 		temp = semanticStack.pop()
-		if (not isinstance(temp, int)) :
-			if ('#' in temp) :
-				temp = temp.replace("#", "")
+		# if (not isinstance(temp, int)) :
+		# 	if ('#' in temp) :
+		# 		temp = temp.replace("#", "")
+		programBlock.pop()
 		addr = semanticStack.pop()
+		wrongAddresses = programBlock.pop()
+		print wrongAddresses
+		wrongAddresses[1] = wrongAddresses[1].replace('#','')
+		programBlock.append(wrongAddresses)
+		# programBlock.pop()
 		print "The semantic stack is at: " + str(semanticStack)
-		programBlock.append(['ASSIGN','@'+str(addr),tempAddr1,''])
-		programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
-		semanticStack.append(tempAddr2)
-		# programBlock.append(['ASSIGN','@'+str(semanticStack[-1]),tempAddr1,''])
-		programBlockPointer = programBlockPointer + 2
+		# programBlock.append(['ASSIGN',str(addr),tempAddr,''])
+		programBlock.append(['ADD',500,tempAddr,gett2])
+		programBlock.append(['ADD',gett2,temp,getTemp])
+		semanticStack.append('@' + str(getTemp))
+		# programBlock.append(['ASSIGN','@'+str(semanticStack[-1]),tempAddr,''])
+		programBlockPointer = programBlockPointer + 3
 	elif nonTerminal == 's' :
 		temp = getTemp()
 		firstOperand = semanticStack.pop()
