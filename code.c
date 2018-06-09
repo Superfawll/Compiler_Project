@@ -3,7 +3,7 @@
 int var1;
 int a[10];
 
-int function(void) {
+/*int function(void) {
 	int a;
 	a = 12;
 }
@@ -16,7 +16,7 @@ int function2(void) {
 		b[a] = 23 - a;
 		a = a + 1;
 	}
-}
+}*/
         
 void main(void){/**/
 	int vo;
@@ -24,11 +24,11 @@ void main(void){/**/
 	int a;
 	int x[10];
 	a = 1; /**/
-	a/*a*/= 1 * -2;
+	/*a= 1 * -2;*/
 
-	x[4] = 12;
+	/*x[4] = 12;*/
 
-	if(a<2)
+	/*if(a<2)
 		c = 52 * -100;
 	else {
 		int c;
@@ -39,7 +39,7 @@ void main(void){/**/
 			b= -1;
 			c = c - 1;
 		}
-	} 
+	} */
 	
 }EOF /*ew;fm*//**/
 	/**/ /*anfre*/

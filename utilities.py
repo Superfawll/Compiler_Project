@@ -14,31 +14,31 @@ tokenNum = 0
 isNum = False
 
 class Node:
-    def __init__(self, n, b, s, p):
+    def __init__(self, n, s, p):
         self.name = n
-        self.base = b
         self.symbolTable = s
         self.parent = p
         self.children = []
 
     def printSubTree(self, tn):
-    	print "{} ******************** {} * {}".format(tn, self.name, self.base)
+    	print "{} ******************** {}".format(tn, self.name)
     	print self.symbolTable
     	for n in self.children:
     		n.printSubTree(tn + 1)
 
-    def setSymbol(self, ls, ra, ln):
-    	self.symbolTable[ls] = [ra, ln]
+    def setSymbol(self, ls, ra, raa, ln):
+    	self.symbolTable[ls] = [ra, raa, ln]
 
     def duplicate(self, symbol):
     	return symbol in self.symbolTable
 
-arrayAddressBase = 1000
-arrayAddressCounter = 0
-localAddressBase = 100
-localAddressCounter = 0
-tempAddressBase = 500
-tempAddressCounter = 0
+
+# arrayAddressBase = 1000
+# arrayAddressCounter = 0
+# localAddressBase = 100
+# localAddressCounter = 0
+# tempAddressBase = 500
+# tempAddressCounter = 0
 
 state1 = 0
 scopeCounter = 0
@@ -46,19 +46,22 @@ state2 = 0
 lastType = ""
 lastSymbol = ""
 lastNum = 1
-globalAddress = 100
 relAddress = 0
-currentNode = Node("", globalAddress, {}, None)
+relArrAddress = 1300
+tempAddress = 301
+
+currentNode = Node("", {}, None)
 root = currentNode
-functions = {}
+functions = {'output':['void', -1, {'x': [0, 1]}]}
+
 semanticStack = []
 programBlock = []
-programBlock.append(['ASSIGN','#0',500,''])
+programBlock.append(['ASSIGN','#200',500,''])
 programBlock.append('')
 programBlockPointer = 2
 tokenIterator = 0
 
-tempAddr = 500
+# tempAddr = 500
 
 mapping = { "else": "e",
 			"if": "f",
@@ -70,6 +73,13 @@ mapping = { "else": "e",
 
 numSignIndicator = ['[','(','*','=',',','+','-','<','q','e','r']
 
+
+def getTemp():
+	global tempAddress
+
+	a = tempAddress
+	tempAddress = tempAddress + 1
+	return a
 
 
 def matchToken(candid):
@@ -198,8 +208,9 @@ def semantics(token):
 	global scopeCounter
 	global state1
 	global currentNode
-	global globalAddress
 	global relAddress
+	global relArrAddress
+	global tempAddress
 	global lastSymbol
 	global lastNum
 
@@ -221,12 +232,14 @@ def semantics(token):
 			if lastSymbol in functions.keys():
 				return "Duplicate Function Definition: \'{}\'' Already Exists!".format(lastSymbol)
 			else:
-				functions[lastSymbol] = [globalAddress, lastType, -1]
+				functions[lastSymbol] = [lastType, -1]
 			# Inserting the new identifier inside of the symbol table linked-list
-			node = Node(lastSymbol, globalAddress, {}, currentNode)
+			node = Node(lastSymbol, {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
 			relAddress = 0
+			relArrAddress = 1300
+			tempAddress = 301
 			state1 = 3
 		else:
 			state1 = 0
@@ -243,10 +256,9 @@ def semantics(token):
 	elif state1 == 5:
 		if t == "{":
 			# Inserting the new scope inside of the symbol table linked-list
-			node = Node("", globalAddress, {}, currentNode)
+			node = Node("", {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
-			relAddress = 0
 			scopeCounter = scopeCounter + 1
 		elif t == "}":
 			currentNode = currentNode.parent
@@ -266,10 +278,9 @@ def semantics(token):
 
 	elif state1 == 8:
 		if t == "{":
-			node = Node("", globalAddress, {}, currentNode)
+			node = Node("", {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
-			relAddress = 0
 			state1 = 5
 			scopeCounter = scopeCounter + 1
 		elif t == "f" or t == "w":
@@ -286,8 +297,8 @@ def addVars(t):
 	global currentNode
 	global lastSymbol
 	global lastNum
-	global globalAddress
 	global relAddress
+	global relArrAddress
 
 	if state2 == 0:
 		if t == "g" or t == "v":
@@ -308,10 +319,12 @@ def addVars(t):
 				return "Duplicate Variable Definition: \'{}\'' Already Exists In This Scope!".format(lastSymbol)
 			if lastType == "void":
 				return "Variable \'{}\' Can Not Be Defined Of Type \'void\'".format(lastSymbol)
-			currentNode.setSymbol(lastSymbol, relAddress, lastNum)
-			size = lastNum * 4
-			globalAddress = globalAddress + size
-			relAddress = relAddress + size
+			aadr = -1
+			if lastNum > 1:
+				aadr = relArrAddress
+				relArrAddress = relArrAddress + 4 * lastNum
+			currentNode.setSymbol(lastSymbol, relAddress, aadr, lastNum)
+			relAddress = relAddress + 4
 			state2 = 0
 			if t == ")":
 				functions[currentNode.name].append(currentNode.symbolTable.copy())
@@ -331,7 +344,7 @@ def findVar(symbol, node):
   n = node
   while n != None:
     if symbol in n.symbolTable.keys() :
-      return [n.name, n.base, n.symbolTable[symbol]]
+      return [n.name, n.symbolTable[symbol]]
     else : n = n.parent
 
   return None
@@ -347,10 +360,7 @@ def codeGen(nonTerminal, token):
 	if nonTerminal == 'a' :
 		if token[1] == 'main' :
 			programBlock[1] = ['JP',programBlockPointer,'','']
-		localAddressBase = 1500
-		tempAddressBase = 2000
-		arrayAddressBase = 2500
-		functions[token[1]][2] = programBlockPointer
+		functions[token[1]][1] = programBlockPointer
 	elif nonTerminal == 'b' :
 		print semanticStack
 		print programBlock
@@ -404,25 +414,26 @@ def codeGen(nonTerminal, token):
 	elif nonTerminal == 'r1' :
 		print token[1] + " This is the token which is going to be pushed inside of the semantic stack!"
 		print "The semantic stack is at: " + str(semanticStack)
-		# print (findVar(token[1], currentNode))[2][1]
-		i = int((findVar(token[1], currentNode))[2][0])
+		print token[1]
+		print (findVar(token[1], currentNode))[1][1]
+		i = int((findVar(token[1], currentNode))[1][0])
 		semanticStack.append(i)
 	elif nonTerminal == 'p' :
-		tempAddr = 500
-		getTemp = 501
+		tempAddr1 = getTemp()
+		tempAddr2 = getTemp()
 		temp = semanticStack.pop()
 		if (not isinstance(temp, int)) :
 			if ('#' in temp) :
 				temp = temp.replace("#", "")
 		addr = semanticStack.pop()
 		print "The semantic stack is at: " + str(semanticStack)
-		programBlock.append(['ASSIGN','@'+str(addr),tempAddr,''])
-		programBlock.append(['ADD',tempAddr,temp,getTemp])
-		semanticStack.append(getTemp)
-		# programBlock.append(['ASSIGN','@'+str(semanticStack[-1]),tempAddr,''])
+		programBlock.append(['ASSIGN','@'+str(addr),tempAddr1,''])
+		programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
+		semanticStack.append(tempAddr2)
+		# programBlock.append(['ASSIGN','@'+str(semanticStack[-1]),tempAddr1,''])
 		programBlockPointer = programBlockPointer + 2
 	elif nonTerminal == 's' :
-		temp = 500
+		temp = getTemp()
 		firstOperand = semanticStack.pop()
 		operation = semanticStack.pop()
 		secondOperand = semanticStack.pop()
@@ -434,7 +445,7 @@ def codeGen(nonTerminal, token):
 	elif nonTerminal == 'u' :
 		semanticStack.append('equal')
 	elif nonTerminal == 'x1' :
-		temp = 500
+		temp = getTemp()
 		firstOperand = semanticStack.pop()
 		operation = semanticStack.pop()
 		secondOperand = semanticStack.pop()
@@ -453,16 +464,16 @@ def codeGen(nonTerminal, token):
 	# elif nonTerminal == 'x5' :
 	# elif nonTerminal == 'x6' :
 	elif nonTerminal == 'x7' :
-		temp = 500
+		temp = getTemp()
 		firstOperand = semanticStack.pop()
 		secondOperand = semanticStack.pop()
 		programBlock.append(['MULT',firstOperand,secondOperand,temp]) # TODO:Addressing!!!!!!!!
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.append(temp)
-	elif nonTerminal == 'x8' :
-		localAddressBase = 100
-		tempAddressBase = 500
-		arrayAddressBase = 1000
+	# elif nonTerminal == 'x8' :
+	# 	# localAddressBase = 100
+	# 	# tempAddressBase = 500
+	# 	# arrayAddressBase = 1000
 
 
 
