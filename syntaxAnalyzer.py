@@ -6,10 +6,6 @@ gotoTable = utilities.getGotoTable("gotoTable.txt")
 actionTable = utilities.getActionTable("actionTable.txt")
 followSet = utilities.getFollowSet("followSets.txt")	
 
-# with open("results/tokens.txt", "r") as tokensFile :
-# 	tokens = tokensFile.read().split("\n")
-# tokens.append("$")
-
 with open("code.c", "r") as codeFile :
 	codeString = codeFile.read()
 	
@@ -44,7 +40,7 @@ stackPop = 0
 previousState = ''
 previousToken = ''
 
-with open("results/reductions.txt", "w") as reductionSequenceFile :
+with open("reductions.txt", "w") as reductionSequenceFile :
 	while True :
 
 		if (codeString != "" and not done):
