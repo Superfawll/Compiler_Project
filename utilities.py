@@ -214,7 +214,7 @@ def semantics(token):
 
 	t = token[0]
 
-	if t == "z" and not ("main" in function.keys()):
+	if t == "z" and not ("main" in functions.keys()):
 		return "The \'main\' function has not been defined!"
 
 	if state1 == 0:
@@ -410,6 +410,9 @@ def codeGen(nonTerminal, token):
 	elif nonTerminal == 'w2' :
 		# print "The semantic stack is at: " + str(semanticStack)
 		programBlock.append(['ASSIGN',semanticStack[-1],semanticStack[-2],''])
+		print "The program block is at: " + str(programBlockPointer) + " and the pushed block is: " + str(programBlock[-1])
+		print programBlock[programBlockPointer]
+
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.pop()
 		result = semanticStack.pop()
@@ -422,7 +425,7 @@ def codeGen(nonTerminal, token):
 		# print (findVar(token[1], currentNode))[2][1]
 		i = (findVar(token[1], currentNode))[1][0]
 		semanticStack.append(programBlockPointer)
-		# print programBlockPointer
+		print programBlockPointer
 		programBlock.append(['ASSIGN','#' + str(i),temp,''])
 		programBlock.append(['ADD',temp,500,temp1])
 		programBlockPointer = programBlockPointer + 2
@@ -460,7 +463,7 @@ def codeGen(nonTerminal, token):
 		programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
 		semanticStack.append('@' + str(tempAddr2))
 		# programBlock.append(['ASSIGN','@'+str(semanticStack[-1]),tempAddr1,''])
-		programBlockPointer = programBlockPointer + 3
+		programBlockPointer = programBlockPointer + 2
 	elif nonTerminal == 's' :
 		temp = getTemp()
 		firstOperand = semanticStack.pop()
