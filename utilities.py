@@ -13,6 +13,9 @@ eofWatch = False
 tokenNum = 0
 isNum = False
 
+class Condition:
+
+
 class Node:
     def __init__(self, fun, n, s, p):
     	self.function = fun
@@ -20,7 +23,7 @@ class Node:
         self.symbolTable = s
         self.parent = p
         self.children = []
-        self.retured = False
+        self.returned = False
 
     def printSubTree(self, tn):
     	print "{} ******************** {}".format(tn, self.name)
@@ -233,8 +236,6 @@ def scopeChecking(t):
 
 	if state1 == 0:
 		state1 = 1 if (t == "g" or t == "v") else (9 if t == "z" else 0)
-		if t == "r":
-			currentNode.returned = True
 
 	elif state1 == 1:
 		state1 = 2 if t == "i" else -1
@@ -254,6 +255,7 @@ def scopeChecking(t):
 			node = Node(True, lastSymbol, {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
+			currentNode.returned = False if lastType == "int" else True
 			relAddress = 0
 			relArrAddress = 1300
 			tempAddress = 301
@@ -287,6 +289,8 @@ def scopeChecking(t):
 				scopeCounter = scopeCounter - 1
 		else:
 			state1 = 6 if (t == "f" or t == "w") else (8 if t == "e" else 5)
+			if t == "r":
+				currentNode.returned = True
 
 	elif state1 == 6:
 		state1 = 7 if t == "(" else -1
