@@ -393,9 +393,6 @@ def codeGen(nonTerminal, token):
 	elif nonTerminal == 'l' :
 		programBlock[semanticStack[-1]] = ['JPF',semanticStack[-2],programBlockPointer + 1,'']
 		print programBlock[semanticStack[-1]]
-		with open('program.txt', 'w') as program :
-			for item in programBlock:
-  				print>>program, item
 		programBlock.append(['JP',semanticStack[-3],'',''])
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.pop()
@@ -443,12 +440,16 @@ def codeGen(nonTerminal, token):
 		print "The semantic stack is at: " + str(semanticStack)
 		semanticStack.pop()
 		# print temp
-		# print pointer
+		# 
 		# print "The semantic stack is at: " + str(semanticStack)
 		# if (not isinstance(temp, int)) :
 		# 	if ('#' in temp) :
 		# 		temp = temp.replace("#", "")
 		# programBlock.pop()
+		with open('program.txt', 'w') as program :
+			for item in programBlock:
+  				print>>program, item
+  		print pointer
 		wrongAddresses = programBlock[pointer]
 		# print wrongAddresses
 		wrongAddresses[1] = wrongAddresses[1].replace('#','')
