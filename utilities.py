@@ -40,6 +40,9 @@ class BlockNode:
     def duplicate(self, symbol):
     	return symbol in self.symbolTable
 
+    def checkReturned():
+    	return
+
 
 # arrayAddressBase = 1000
 # arrayAddressCounter = 0
@@ -283,13 +286,14 @@ def scopeChecking(t):
 			currentBlockNode = node
 			scopeCounter = scopeCounter + 1
 		elif t == "}":
-			currentBlockNode = currentBlockNode.parent
+			currentBlockNode.checkReturned()
 			if scopeCounter == 0:
-				if not currentBlockNode.root.returned and functions[currentBlockNode.name].type == "int":
+				if not currentBlockNode.root.returned:
 					return "Function \'{}\' Has Not Retured A Value".format(currentBlockNode.name)
 				state1 = 0
 			else:
 				scopeCounter = scopeCounter - 1
+			currentBlockNode = currentBlockNode.parent
 		elif t == "w" or t == "f":
 			state1 = 6
 			node = Node()
@@ -319,8 +323,17 @@ def scopeChecking(t):
 			scopeCounter = scopeCounter + 1
 		elif t == "f" or t == "w":
 			state1 = 6
-		elif t != "e":
+			node = Node()
+			currentBlockNode.curNode.children.append([node])
+			currentBlockNode.curNode = node
+		elif t == "e":
+			node = Node()
+			currentBlockNode.curNode.children[-1].append(node)
+			currentBlockNode.curNode = node
+		elif:
 			state1 = 5
+			if t == "r":
+			currentBlockNode.curNode.returned = True
 
 	return "" if state1 == -1 else "OK!"
 
