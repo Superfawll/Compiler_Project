@@ -4,8 +4,8 @@ ID = r"([A-Za-z]([A-Za-z]|[0-9])*)"
 NUM = r"((\+|-)?([0-9])+)"
 keyword1 = r"(EOF|int|void|if|else|while|return)"
 keyword2 = r"(;|\[|\]|\(|\)|\{|\}|,|=|<|==|\+|\*|-)"
-nonTerminals = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','x','y']
-terminals = ['$',')','(','*','+',',','-',';','<','=','[',']','e','f','g','i','n','q','r','v','w','z','{','}']
+nonTerminals = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','x','t','u','s','w1','y','c','d','h','x2','x4','x7','x5','x6','k','o','m','r1','p','w2','j','b','a','x3','x1','x8','l']
+terminals = ['(',')','*','+',',','-',';','<','=','[',']','e','f','g','i','n','q','r','v','w','z','{','}','$']
 
 contiguousSubString = ""
 tokens = []
@@ -22,10 +22,8 @@ class Node:
         self.children = []
 
     def printSubTree(self, tn):
-    	print "{}********************{}*{}".format(tn, self.name, self.base)
+    	print "{} ******************** {} * {}".format(tn, self.name, self.base)
     	print self.symbolTable
-    	# for k in self.symbolTable.keys():
-    		# print tabs + "{}: {}, {}, {}".format(self.symbolTable[k][0], self.symbolTable[k][1], self.symbolTable[k][2])
     	for n in self.children:
     		n.printSubTree(tn + 1)
 
@@ -35,9 +33,15 @@ class Node:
     def duplicate(self, symbol):
     	return symbol in self.symbolTable
 
+arrayAddressBase = 1000
+arrayAddressCounter = 0
+localAddressBase = 100
+localAddressCounter = 0
+tempAddressBase = 500
+tempAddressCounter = 0
 
 state1 = 0
-s1Ind = 0
+scopeCounter = 0
 state2 = 0
 lastType = ""
 lastSymbol = ""
@@ -47,6 +51,14 @@ relAddress = 0
 currentNode = Node("", globalAddress, {}, None)
 root = currentNode
 functions = {}
+semanticStack = []
+programBlock = []
+programBlock.append(['ASSIGN','#0',500,''])
+programBlock.append('')
+programBlockPointer = 2
+tokenIterator = 0
+
+tempAddr = 500
 
 mapping = { "else": "e",
 			"if": "f",
@@ -70,20 +82,20 @@ def matchToken(candid):
 	global isNum
 
 	if (contiguousSubString[0] == '+' or contiguousSubString[0] == '-') and candid == "Keyword" :
-						if (tokens[-1] in numSignIndicator and tokens[-1] != ')')\
-						    or (\
-						    tokens[-1] == ')' and (\
-						    tokens[len(tokens) - tokens[::-1].index('(') - 2] == 'w' or \
-						    tokens[len(tokens) - tokens[::-1].index('(') - 2] == 'f')) :
-							isNum = True
+		if (tokens[-1][0] in numSignIndicator and tokens[-1][0] != ')') :
+			isNum = True
+		elif tokens[-1][0] == ')' and (\
+		    	tokens[len(tokens) - tokens[::-1].index(('(','(')) - 2][0] == 'w' or \
+		    	tokens[len(tokens) - tokens[::-1].index(('(','(')) - 2][0] == 'f') :
+				isNum = True
 
 	if candid == "Keyword" and not isNum:
 		keyword = r"\A" + "(" + keyword2 + "|(" + keyword1 + "(?!" + "[A-Za-z0-9]" + ")))"
 		sKey = re.match(keyword, contiguousSubString)
-		if sKey :#and ((sKey.group() != "+" and sKey.group() != "-") or checkPrev("n") or checkPrev("i") or checkPrev("y)") or checkPrev("]") or (checkPrev("(P)") and not checkPrev("f(P)") and not checkPrev("w(P)"))) :
+		if sKey :
 			sKey = sKey.group()
-			if len(tokens) > 1 and tokens[len(tokens) - 1] == "=" and sKey == "=" :
-				tokens[len(tokens) - 1] = "q"
+			if len(tokens) > 1 and tokens[len(tokens) - 1][0] == "=" and sKey == "=" :
+				tokens[len(tokens) - 1] = ('q','==')
 			else :
 				if sKey in mapping.keys() :
 					tokens.append((mapping[sKey], sKey))
@@ -111,8 +123,6 @@ def matchToken(candid):
 			tag = "i" if candid == "ID" else "n"
 			tokens.append((tag, matched))
 			tokenNum = tokenNum + 1
-			# if candid == "ID": lastSymbol = matched
-			# if candid == "NUM": lastNum = int(matched)
 			contiguousSubString = re.sub(pattern, "", contiguousSubString)
 			return True
 		else :
@@ -122,9 +132,17 @@ def matchToken(candid):
 def getRules(file):
 	rules = []
 	with open(file, "r") as grammarFile :
-		for i in range(55) :
+		for i in range(80) :
 			rule = grammarFile.readline().split("\t")
-			rules.append([rule[0], (len(rule[1]) - 1) * 2])
+			if not i in [32, 34, 35, 40, 42, 43, 44, 48, 49, 50, 9] :
+				rules.append([rule[0], (len(rule[1]) - 1) * 2])
+			elif i != 50 and i != 9 :
+				rules.append([rule[0], ((len(rule[1]) - 1) - 1) * 2])
+			elif i == 50 :
+				rules.append([rule[0], 14])
+			else :
+				rules.append([rule[0], 16])
+	print rules
 
 	return rules
 
@@ -138,11 +156,12 @@ def getGotoTable(file):
 		gotoTable[i] = {}
 
 	iterator = 0
-	for i in range(0, 96) :
+	for i in range(0, 121) :
 		for j in nonTerminals :
-			gotoTable[j][str(i)] = string[(iterator * 4) + i * 113: ((iterator + 1) * 4 + i * 113)].replace(' ', '')
+			gotoTable[j][str(i)] = string[(iterator * 4) + i * 213: ((iterator + 1) * 4 + i * 213)].replace(' ', '')
 			iterator = iterator + 1
 		iterator = 0
+	print gotoTable['x1']['54']
 
 	return gotoTable
 
@@ -156,7 +175,7 @@ def getActionTable(file):
 		actionTable [i] = {}
 
 	iterator = 0
-	for i in range(0, 96) :
+	for i in range(0, 121) :
 		for j in terminals :
 			actionTable[j][str(i)] = string[(iterator * 4) + i * 97: ((iterator + 1) * 4 + i * 97)].replace(' ', '')
 			iterator = iterator + 1
@@ -175,20 +194,8 @@ def getFollowSet(file):
 
 	return followSet
 
-
-def checkPrev(s, SS):
-	matches = True
-	n = len(s)
-	m = len(SS)
-	for i in range(n) :
-		if SS[m - 1 - i] != s[n - 1 - i] :
-			matches = False
-
-	return matches
-
-
 def semantics(token):
-	global s1Ind
+	global scopeCounter
 	global state1
 	global currentNode
 	global globalAddress
@@ -198,9 +205,6 @@ def semantics(token):
 
 	t = token[0]
 
-	# print "token = {} and state1 = {}".format(t, state1)
-	# print "{}\t{}\t{}".format(t, lastSymbol, lastNum)
-
 	if state1 == 0:
 		state1 = 1 if (t == "g" or t == "v") else (9 if t == "z" else 0)
 
@@ -208,15 +212,17 @@ def semantics(token):
 		state1 = 2 if t == "i" else -1
 
 	elif state1 == 2: 
+		# Checking whether main is the last function declaration or not!
 		if "main" in functions.keys() and lastSymbol != "main":
 				return "\'{}\'' Is Defined After \'main\'".format(lastSymbol)
 
 		if t == "(":
+			# Checking whether the function defined has a duplicate name as another function or not!
 			if lastSymbol in functions.keys():
 				return "Duplicate Function Definition: \'{}\'' Already Exists!".format(lastSymbol)
 			else:
-				functions[lastSymbol] = [globalAddress, lastType]
-
+				functions[lastSymbol] = [globalAddress, lastType, -1]
+			# Inserting the new identifier inside of the symbol table linked-list
 			node = Node(lastSymbol, globalAddress, {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
@@ -231,22 +237,23 @@ def semantics(token):
 	elif state1 == 4:
 		if t == "{":
 			state1 = 5
-			s1Ind = 0
+			scopeCounter = 0
 		else: state1 = -1
 
 	elif state1 == 5:
 		if t == "{":
+			# Inserting the new scope inside of the symbol table linked-list
 			node = Node("", globalAddress, {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
 			relAddress = 0
-			s1Ind = s1Ind + 1
+			scopeCounter = scopeCounter + 1
 		elif t == "}":
 			currentNode = currentNode.parent
-			if s1Ind == 0:
+			if scopeCounter == 0:
 				state1 = 0
 			else:
-				s1Ind = s1Ind - 1
+				scopeCounter = scopeCounter - 1
 		else:
 			state1 = 6 if (t == "f" or t == "w") else (8 if t == "e" else 5)
 
@@ -264,14 +271,12 @@ def semantics(token):
 			currentNode = node
 			relAddress = 0
 			state1 = 5
-			s1Ind = s1Ind + 1
+			scopeCounter = scopeCounter + 1
 		elif t == "f" or t == "w":
 			state1 = 6
 		elif t != "e":
 			state1 = 5
 
-	# print "state1 = {}".format(state1)
-	# print "*****"
 	return "" if state1 == -1 else addVars(t)
 
 
@@ -283,8 +288,6 @@ def addVars(t):
 	global lastNum
 	global globalAddress
 	global relAddress
-
-	# print "token = {} and state2 = {}".format(t, state2)
 
 	if state2 == 0:
 		if t == "g" or t == "v":
@@ -321,17 +324,146 @@ def addVars(t):
 	elif state2 == 4:
 		state2 = 2 if t == "]" else -1
 
-	# print "state2 = {}".format(state2)
-	# print "*****"
 	return "" if state2 == -1 else "OK!"
 
 
 def findVar(symbol, node):
   n = node
   while n != None:
-    if symbol in n.symbolTable.keys()
+    if symbol in n.symbolTable.keys() :
       return [n.name, n.base, n.symbolTable[symbol]]
-    else n = n.parent
+    else : n = n.parent
 
   return None
+
+
+def codeGen(nonTerminal, token):
+	global programBlockPointer
+	global programBlock
+	global semanticStack
+
+	print currentNode.symbolTable
+
+	if nonTerminal == 'a' :
+		if token[1] == 'main' :
+			programBlock[1] = ['JP',programBlockPointer,'','']
+		localAddressBase = 1500
+		tempAddressBase = 2000
+		arrayAddressBase = 2500
+		functions[token[1]][2] = programBlockPointer
+	elif nonTerminal == 'b' :
+		print semanticStack
+		print programBlock
+		semanticStack.pop()
+	elif nonTerminal == 'h' :
+		semanticStack.append(programBlockPointer)
+		print "The semantic stack is at: " + str(semanticStack)
+		programBlockPointer = programBlockPointer + 1
+		programBlock.append('')
+	elif nonTerminal == 'd' :
+		programBlock[semanticStack[-1]] = ['JPF',semanticStack[-2],programBlockPointer + 1,'']
+		semanticStack.pop()
+		semanticStack.pop()
+		semanticStack.append(programBlockPointer)
+		programBlockPointer = programBlockPointer + 1
+		programBlock.append('')
+	elif nonTerminal == 'c' :
+		print semanticStack[-1]
+		print programBlock[semanticStack[-1]]
+		programBlock[semanticStack[-1]] = ['JP',programBlockPointer,'','']
+		semanticStack.pop()
+	elif nonTerminal == 'j' :
+		semanticStack.append(programBlockPointer)
+	elif nonTerminal == 'o' :
+		semanticStack.append(programBlockPointer)
+		programBlockPointer = programBlockPointer + 1
+		programBlock.append('')
+	elif nonTerminal == 'l' :
+		programBlock[semanticStack[-1]] = ['JPF',semanticStack[-2],programBlockPointer + 1,'']
+		programBlock.append(['JP',semanticStack[-3],'',''])
+		programBlockPointer = programBlockPointer + 1
+		semanticStack.pop()
+		semanticStack.pop()
+		semanticStack.pop()
+	elif nonTerminal == 'k' :
+		semanticStack.append(programBlockPointer)
+	elif nonTerminal == 'm' :
+		# Return address of the function is pushed at the begining, so just assigning the return value to the return address!
+		programBlock.append(['ASSIGN',semanticStack[-1],semanticStack[-2],''])
+		programBlockPointer = programBlockPointer + 1
+		semanticStack.pop()
+		semanticStack.pop()
+		semanticStack.append(programBlockPointer)
+	elif nonTerminal == 'w2' :
+		print "The semantic stack is at: " + str(semanticStack)
+		programBlock.append(['ASSIGN',semanticStack[-1],semanticStack[-2],''])
+		programBlockPointer = programBlockPointer + 1
+		semanticStack.pop()
+		result = semanticStack.pop()
+		semanticStack.append(result)
+	elif nonTerminal == 'r1' :
+		print token[1] + " This is the token which is going to be pushed inside of the semantic stack!"
+		print "The semantic stack is at: " + str(semanticStack)
+		# print (findVar(token[1], currentNode))[2][1]
+		i = int((findVar(token[1], currentNode))[2][0])
+		semanticStack.append(i)
+	elif nonTerminal == 'p' :
+		tempAddr = 500
+		getTemp = 501
+		temp = semanticStack.pop()
+		if (not isinstance(temp, int)) :
+			if ('#' in temp) :
+				temp = temp.replace("#", "")
+		addr = semanticStack.pop()
+		print "The semantic stack is at: " + str(semanticStack)
+		programBlock.append(['ASSIGN','@'+str(addr),tempAddr,''])
+		programBlock.append(['ADD',tempAddr,temp,getTemp])
+		semanticStack.append(getTemp)
+		# programBlock.append(['ASSIGN','@'+str(semanticStack[-1]),tempAddr,''])
+		programBlockPointer = programBlockPointer + 2
+	elif nonTerminal == 's' :
+		temp = 500
+		firstOperand = semanticStack.pop()
+		operation = semanticStack.pop()
+		secondOperand = semanticStack.pop()
+		programBlock.append(['EQ',firstOperand,secondOperand,temp] if (operation == 'equal') else (['LT',secondOperand,firstOperand,temp] if operation == 'less' else '')) # TODO:Addressing!!!!!!!!
+		programBlockPointer = programBlockPointer + 1
+		semanticStack.append(temp)
+	elif nonTerminal == 't' :
+		semanticStack.append('less')
+	elif nonTerminal == 'u' :
+		semanticStack.append('equal')
+	elif nonTerminal == 'x1' :
+		temp = 500
+		firstOperand = semanticStack.pop()
+		operation = semanticStack.pop()
+		secondOperand = semanticStack.pop()
+		programBlock.append(['ADD',firstOperand,secondOperand,temp] if operation == 'add' else (['SUB',firstOperand,secondOperand,temp] if operation == 'sub' else '')) # TODO:Addressing!!!!!!!!
+		programBlockPointer = programBlockPointer + 1
+		semanticStack.append(temp)
+	elif nonTerminal == 'w1' :
+		semanticStack.append('add')
+	elif nonTerminal == 'x2' :
+		semanticStack.append('sub')
+	# elif nonTerminal == 'x3' :
+	elif nonTerminal == 'x4' :
+		print token[1] + " This is the token which is going to be pushed inside of the semantic stack!"
+		semanticStack.append('#' + str(token[1]))
+		print "The semantic stack is at: " + str(semanticStack)
+	# elif nonTerminal == 'x5' :
+	# elif nonTerminal == 'x6' :
+	elif nonTerminal == 'x7' :
+		temp = 500
+		firstOperand = semanticStack.pop()
+		secondOperand = semanticStack.pop()
+		programBlock.append(['MULT',firstOperand,secondOperand,temp]) # TODO:Addressing!!!!!!!!
+		programBlockPointer = programBlockPointer + 1
+		semanticStack.append(temp)
+	elif nonTerminal == 'x8' :
+		localAddressBase = 100
+		tempAddressBase = 500
+		arrayAddressBase = 1000
+
+
+
 

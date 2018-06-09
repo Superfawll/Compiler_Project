@@ -39,7 +39,7 @@
 	</production>
 	<production>
 		<left>F</left>
-		<right>Ei(T)H</right>
+		<right>Ei(ĘT)H</right>
 	</production>
 	<production>
 		<left>T</left>
@@ -107,7 +107,7 @@
 	</production>
 	<production>
 		<left>K</left>
-		<right>P;</right>
+		<right>P;Ė</right>
 	</production>
 	<production>
 		<left>K</left>
@@ -115,23 +115,23 @@
 	</production>
 	<production>
 		<left>M</left>
-		<right>f(P)LeL</right>
+		<right>f(PË)LÊeLÉ</right>
 	</production>
 	<production>
 		<left>Q</left>
-		<right>w(P)L</right>
+		<right>w(ĒPÙ)LŪ</right>
 	</production>
 	<production>
 		<left>R</left>
-		<right>r;</right>
+		<right>r;Ö</right>
 	</production>
 	<production>
 		<left>R</left>
-		<right>rP;</right>
+		<right>rP;Ú</right>
 	</production>
 	<production>
 		<left>P</left>
-		<right>V=P</right>
+		<right>V=PĀ</right>
 	</production>
 	<production>
 		<left>P</left>
@@ -139,15 +139,15 @@
 	</production>
 	<production>
 		<left>V</left>
-		<right>i</right>
+		<right>iÛ</right>
 	</production>
 	<production>
 		<left>V</left>
-		<right>i[P]</right>
+		<right>iÛ[PÜ]</right>
 	</production>
 	<production>
 		<left>N</left>
-		<right>OWO</right>
+		<right>OWOÅ</right>
 	</production>
 	<production>
 		<left>N</left>
@@ -155,15 +155,15 @@
 	</production>
 	<production>
 		<left>W</left>
-		<right>&lt;</right>
+		<right>&lt;Â</right>
 	</production>
 	<production>
 		<left>W</left>
-		<right>q</right>
+		<right>qÃ</right>
 	</production>
 	<production>
 		<left>O</left>
-		<right>OYX</right>
+		<right>OYXĮ</right>
 	</production>
 	<production>
 		<left>O</left>
@@ -171,15 +171,15 @@
 	</production>
 	<production>
 		<left>Y</left>
-		<right>+</right>
+		<right>+Æ</right>
 	</production>
 	<production>
 		<left>Y</left>
-		<right>-</right>
+		<right>-Ì</right>
 	</production>
 	<production>
 		<left>X</left>
-		<right>X*Z</right>
+		<right>X*ZÎ</right>
 	</production>
 	<production>
 		<left>X</left>
@@ -195,15 +195,15 @@
 	</production>
 	<production>
 		<left>Z</left>
-		<right>S</right>
+		<right>SĪ</right>
 	</production>
 	<production>
 		<left>Z</left>
-		<right>n</right>
+		<right>nÍ</right>
 	</production>
 	<production>
 		<left>S</left>
-		<right>i(È)</right>
+		<right>iÛ(ÈÕ)Ï</right>
 	</production>
 	<production>
 		<left>È</left>
@@ -220,5 +220,101 @@
 	<production>
 		<left>À</left>
 		<right>P</right>
+	</production>
+	<production>
+		<left>Ę</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ė</left>
+		<right/>
+	</production>
+	<production>
+		<left>É</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ē</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ë</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ê</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ū</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ú</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ù</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ü</left>
+		<right/>
+	</production>
+	<production>
+		<left>Û</left>
+		<right/>
+	</production>
+	<production>
+		<left>Å</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ā</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ã</left>
+		<right/>
+	</production>
+	<production>
+		<left>Æ</left>
+		<right/>
+	</production>
+	<production>
+		<left>Â</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ì</left>
+		<right/>
+	</production>
+	<production>
+		<left>Í</left>
+		<right/>
+	</production>
+	<production>
+		<left>Į</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ï</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ī</left>
+		<right/>
+	</production>
+	<production>
+		<left>Ö</left>
+		<right/>
+	</production>
+	<production>
+		<left>Õ</left>
+		<right/>
+	</production>
+	<production>
+		<left>Î</left>
+		<right/>
 	</production>
 </structure>

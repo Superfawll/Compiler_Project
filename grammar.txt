@@ -7,7 +7,7 @@ C	Ei;
 C	Ei[n];
 E	g
 E	v
-F	Ei(T)H
+F	Ei(aT)Hx8
 T	I
 T	v
 I	I,U
@@ -24,32 +24,57 @@ L	M
 L	H
 L	Q
 L	R
-K	P;
+K	P;b
 K	;
-M	f(P)LeL
-Q	w(P)L
-R	r;
-R	rP;
-P	V=P
+M	f(Ph)LdeLc
+Q	w(jPo)Ll
+R	r;k
+R	rP;m
+P	V=Pw2
 P	N
-V	i
-V	i[P]
-N	OWO
+V	ir1
+V	ir1[Pp]
+N	OWOs
 N	O
-W	<
-W	q
-O	OYX
+W	<t
+W	qu
+O	OYXx1
 O	X
-Y	+
-Y	-
-X	X*Z
+Y	+w1
+Y	-x2
+X	X*Zx7
 X	Z
 Z	(P)
 Z	V
-Z	S
-Z	n
-S	i(y)
+Z	Sx3
+Z	nx4
+S	ir1(yx6)x5
 y	x
 y	
 x	x,P
 x	P
+a	
+b	
+c	
+j	
+h	
+d		
+l	
+m	
+o	
+p	
+r1	
+s	
+w2		
+u	
+w1	
+t	
+x2	
+x4	
+x1	
+x5	
+x3	
+k	
+x6	
+x7	
+x8	 

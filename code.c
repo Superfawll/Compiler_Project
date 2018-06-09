@@ -3,50 +3,43 @@
 int var1;
 int a[10];
 
-int output(int a){
-	int b;
-	int s[5];
-	return 1;
+int function(void) {
+	int a;
+	a = 12;
 }
-           
+
+int function2(void) {
+	int a;
+	int b[23];
+	a = 0;
+	while(a<23){
+		b[a] = 23 - a;
+		a = a + 1;
+	}
+}
+        
 void main(void){/**/
 	int vo;
 	int c;
+	int a;
+	int x[10];
 	a = 1; /**/
-	b/*a*/= 1 *-2
-	/* */
-	int3[2] = (2 + 2) - ( 2);
-	c = 5 == 4;
-	/*a*/inta[1] =3 + (2);
+	a/*a*/= 1 * -2;
 
-	if(a)
-		if(b){
-			int a;
-			int x;
-			x = 1;
-			if(x){
-				int b;
-			}
-			else{
-				int a;
-				x = 4;
-			}
-		}
-		else{
-			int k[5];
-			int x;
-			while(k[0]){
-				int x;
-				int k;
-				int b[10];
-			}
-		}
-	else{
+	x[4] = 12;
+
+	if(a<2)
+		c = 52 * -100;
+	else {
 		int c;
-	}while(c){
-		int b;
-		b = 0;
-	}
-
+		c = 5 * 2;
+		while(c){
+			int b;
+			b = 0;
+			b= -1;
+			c = c - 1;
+		}
+	} 
+	
 }EOF /*ew;fm*//**/
 	/**/ /*anfre*/
