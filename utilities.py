@@ -13,10 +13,9 @@ eofWatch = False
 tokenNum = 0
 isNum = False
 
-class Condition:
+class 
 
-
-class Node:
+class BlockNode:
     def __init__(self, fun, n, s, p):
     	self.function = fun
         self.name = n
@@ -24,6 +23,7 @@ class Node:
         self.parent = p
         self.children = []
         self.returned = False
+        self.returnCount = 0
 
     def printSubTree(self, tn):
     	print "{} ******************** {}".format(tn, self.name)
@@ -54,7 +54,7 @@ lastNum = 1
 relAddress = 0
 relArrAddress = 1300
 tempAddress = 301
-currentNode = Node("", {}, None)
+currentNode = BlockNode("", {}, None)
 functions = {'output':['void', -1, {'x': [0, 1]}]}
 
 semanticStack = []
@@ -252,7 +252,7 @@ def scopeChecking(t):
 			else:
 				functions[lastSymbol] = [lastType, -1]
 			# Inserting the new identifier inside of the symbol table linked-list
-			node = Node(True, lastSymbol, {}, currentNode)
+			node = BlockNode(True, lastSymbol, {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
 			currentNode.returned = False if lastType == "int" else True
@@ -275,7 +275,7 @@ def scopeChecking(t):
 	elif state1 == 5:
 		if t == "{":
 			# Inserting the new scope inside of the symbol table linked-list
-			node = Node(False, currentNode.name, {}, currentNode)
+			node = BlockNode(False, currentNode.name, {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
 			scopeCounter = scopeCounter + 1
@@ -301,7 +301,7 @@ def scopeChecking(t):
 
 	elif state1 == 8:
 		if t == "{":
-			node = Node(False, currentNode.name, {}, currentNode)
+			node = BlockNode(False, currentNode.name, {}, currentNode)
 			currentNode.children.append(node)
 			currentNode = node
 			state1 = 5
