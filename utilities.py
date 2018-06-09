@@ -152,7 +152,7 @@ def getRules(file):
 				rules.append([rule[0], 14])
 			else :
 				rules.append([rule[0], 16])
-	print rules
+	# print rules
 
 	return rules
 
@@ -171,7 +171,7 @@ def getGotoTable(file):
 			gotoTable[j][str(i)] = string[(iterator * 4) + i * 213: ((iterator + 1) * 4 + i * 213)].replace(' ', '')
 			iterator = iterator + 1
 		iterator = 0
-	print gotoTable['x1']['54']
+	# print gotoTable['x1']['54']
 
 	return gotoTable
 
@@ -355,19 +355,19 @@ def codeGen(nonTerminal, token):
 	global programBlock
 	global semanticStack
 
-	print currentNode.symbolTable
+	# print currentNode.symbolTable
 
 	if nonTerminal == 'a' :
 		if token[1] == 'main' :
 			programBlock[1] = ['JP',programBlockPointer,'','']
 		functions[token[1]][1] = programBlockPointer
 	elif nonTerminal == 'b' :
-		print semanticStack
-		print programBlock
+		# print semanticStack
+		# print programBlock
 		semanticStack.pop()
 	elif nonTerminal == 'h' :
 		semanticStack.append(programBlockPointer)
-		print "The semantic stack is at: " + str(semanticStack)
+		# print "The semantic stack is at: " + str(semanticStack)
 		programBlockPointer = programBlockPointer + 1
 		programBlock.append('')
 	elif nonTerminal == 'd' :
@@ -378,8 +378,8 @@ def codeGen(nonTerminal, token):
 		programBlockPointer = programBlockPointer + 1
 		programBlock.append('')
 	elif nonTerminal == 'c' :
-		print semanticStack[-1]
-		print programBlock[semanticStack[-1]]
+		# print semanticStack[-1]
+		# print programBlock[semanticStack[-1]]
 		programBlock[semanticStack[-1]] = ['JP',programBlockPointer,'','']
 		semanticStack.pop()
 	elif nonTerminal == 'j' :
@@ -405,7 +405,7 @@ def codeGen(nonTerminal, token):
 		semanticStack.pop()
 		semanticStack.append(programBlockPointer)
 	elif nonTerminal == 'w2' :
-		print "The semantic stack is at: " + str(semanticStack)
+		# print "The semantic stack is at: " + str(semanticStack)
 		programBlock.append(['ASSIGN',semanticStack[-1],semanticStack[-2],''])
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.pop()
@@ -415,14 +415,14 @@ def codeGen(nonTerminal, token):
 		temp = getTemp()
 		temp1 = getTemp()
 		# print token[1] + " This is the token which is going to be pushed inside of the semantic stack!"
-		print "The semantic stack is at: " + str(semanticStack)
+		# print "The semantic stack is at: " + str(semanticStack)
 		# print (findVar(token[1], currentNode))[2][1]
 		i = (findVar(token[1], currentNode))[1][0]
 		programBlock.append(['ASSIGN','#' + str(i),temp,''])
 		programBlock.append(['ADD',temp,500,temp1])
 		programBlockPointer = programBlockPointer + 2
 		semanticStack.append('@' + str(temp1))
-		print semanticStack[-1]
+		# print semanticStack[-1]
 	elif nonTerminal == 'p' :
 		tempAddr1 = getTemp()
 		tempAddr2 = getTemp()
@@ -432,18 +432,18 @@ def codeGen(nonTerminal, token):
 		# 	if ('#' in temp) :
 		# 		temp = temp.replace("#", "")
 		programBlock.pop()
-		addr = semanticStack.pop()
+		semanticStack.pop()
 		wrongAddresses = programBlock.pop()
-		print wrongAddresses
+		# print wrongAddresses
 		wrongAddresses[1] = wrongAddresses[1].replace('#','')
 		programBlock.append(wrongAddresses)
 		# programBlock.pop()
-		print "The semantic stack is at: " + str(semanticStack)
-		# programBlock.append(['ASSIGN',str(addr),tempAddr,''])
-		programBlock.append(['ADD',500,tempAddr,gett2])
-		programBlock.append(['ADD',gett2,temp,getTemp])
-		semanticStack.append('@' + str(getTemp))
-		# programBlock.append(['ASSIGN','@'+str(semanticStack[-1]),tempAddr,''])
+		# print "The semantic stack is at: " + str(semanticStack)
+		# programBlock.append(['ASSIGN',wrongAddresses[2],tempAddr1,''])
+		programBlock.append(['ADD',500,wrongAddresses[2],tempAddr1])
+		programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
+		semanticStack.append('@' + str(tempAddr2))
+		# programBlock.append(['ASSIGN','@'+str(semanticStack[-1]),tempAddr1,''])
 		programBlockPointer = programBlockPointer + 3
 	elif nonTerminal == 's' :
 		temp = getTemp()
@@ -471,9 +471,9 @@ def codeGen(nonTerminal, token):
 		semanticStack.append('sub')
 	# elif nonTerminal == 'x3' :
 	elif nonTerminal == 'x4' :
-		print token[1] + " This is the token which is going to be pushed inside of the semantic stack!"
+		# print token[1] + " This is the token which is going to be pushed inside of the semantic stack!"
 		semanticStack.append('#' + str(token[1]))
-		print "The semantic stack is at: " + str(semanticStack)
+		# print "The semantic stack is at: " + str(semanticStack)
 	# elif nonTerminal == 'x5' :
 	# elif nonTerminal == 'x6' :
 	elif nonTerminal == 'x7' :

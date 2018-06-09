@@ -6,7 +6,7 @@ int a[10];
 /*int function(void) {
 	int a;
 	a = 12;
-}
+}*/
 
 int function2(void) {
 	int a;
@@ -16,7 +16,7 @@ int function2(void) {
 		b[a] = 23 - a;
 		a = a + 1;
 	}
-}*/
+}
         
 void main(void){/**/
 	int vo;
@@ -24,7 +24,7 @@ void main(void){/**/
 	int a;
 	int x[10];
 	a = 1; /**/
-	/*a= 1 * -2;*/
+	x[2] = 1 * -2 + (1+2);
 
 	/*x[4] = 12;*/
 

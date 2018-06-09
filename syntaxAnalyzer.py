@@ -260,16 +260,16 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 # print "\n\n"
 # print utilities.functions
 
-utilities.root.printSubTree(0)
-print utilities.functions
+# utilities.root.printSubTree(0)
+# print utilities.functions
 
-print utilities.programBlock
+# print utilities.programBlock
 
 with open('program.txt', 'w') as program :
 	for item in utilities.programBlock:
   		print>>program, item
 
-print "\n"
-print str(utilities.tokens) + "\nThis is the understood language flow of the program!"
+# print "\n"
+# print str(utilities.tokens) + "\nThis is the understood language flow of the program!"
 
 
