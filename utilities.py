@@ -13,7 +13,10 @@ eofWatch = False
 tokenNum = 0
 isNum = False
 
-class 
+class Node:
+	def __init__(self):
+    	self.returned = False
+    	self.children = []
 
 class BlockNode:
     def __init__(self, fun, n, s, p):
@@ -22,8 +25,8 @@ class BlockNode:
         self.symbolTable = s
         self.parent = p
         self.children = []
-        self.returned = False
-        self.returnCount = 0
+        self.root = Node()
+        self.curNode = self.root
 
     def printSubTree(self, tn):
     	print "{} ******************** {}".format(tn, self.name)
@@ -54,7 +57,7 @@ lastNum = 1
 relAddress = 0
 relArrAddress = 1300
 tempAddress = 301
-currentNode = BlockNode("", {}, None)
+currentBlockNode = BlockNode("", {}, None)
 functions = {'output':['void', -1, {'x': [0, 1]}]}
 
 semanticStack = []
@@ -227,7 +230,7 @@ def semantics(token):
 def scopeChecking(t):
 	global scopeCounter
 	global state1
-	global currentNode
+	global currentBlockNode
 	global relAddress
 	global relArrAddress
 	global tempAddress
@@ -252,10 +255,10 @@ def scopeChecking(t):
 			else:
 				functions[lastSymbol] = [lastType, -1]
 			# Inserting the new identifier inside of the symbol table linked-list
-			node = BlockNode(True, lastSymbol, {}, currentNode)
-			currentNode.children.append(node)
-			currentNode = node
-			currentNode.returned = False if lastType == "int" else True
+			node = BlockNode(True, lastSymbol, {}, currentBlockNode)
+			currentBlockNode.children.append(node)
+			currentBlockNode = node
+			currentBlockNode.root.returned = False if lastType == "int" else True
 			relAddress = 0
 			relArrAddress = 1300
 			tempAddress = 301
@@ -275,22 +278,30 @@ def scopeChecking(t):
 	elif state1 == 5:
 		if t == "{":
 			# Inserting the new scope inside of the symbol table linked-list
-			node = BlockNode(False, currentNode.name, {}, currentNode)
-			currentNode.children.append(node)
-			currentNode = node
+			node = BlockNode(False, currentBlockNode.name, {}, currentBlockNode)
+			currentBlockNode.children.append(node)
+			currentBlockNode = node
 			scopeCounter = scopeCounter + 1
 		elif t == "}":
-			currentNode = currentNode.parent
+			currentBlockNode = currentBlockNode.parent
 			if scopeCounter == 0:
-				if not currentNode.returned and functions[currentNode.name].type == "int":
-					return "Function \'{}\' Has Not Retured A Value".format(currentNode.name)
+				if not currentBlockNode.root.returned and functions[currentBlockNode.name].type == "int":
+					return "Function \'{}\' Has Not Retured A Value".format(currentBlockNode.name)
 				state1 = 0
 			else:
 				scopeCounter = scopeCounter - 1
-		else:
-			state1 = 6 if (t == "f" or t == "w") else (8 if t == "e" else 5)
-			if t == "r":
-				currentNode.returned = True
+		elif t == "w" or t == "f":
+			state1 = 6
+			node = Node()
+			currentBlockNode.curNode.children.append([node])
+			currentBlockNode.curNode = node
+		elif t == "e":
+			state1 = 8
+			node = Node()
+			currentBlockNode.curNode.children[-1].append(node)
+			currentBlockNode.curNode = node
+		elif t == "r":
+			currentBlockNode.root.returned = True
 
 	elif state1 == 6:
 		state1 = 7 if t == "(" else -1
@@ -301,9 +312,9 @@ def scopeChecking(t):
 
 	elif state1 == 8:
 		if t == "{":
-			node = BlockNode(False, currentNode.name, {}, currentNode)
-			currentNode.children.append(node)
-			currentNode = node
+			node = BlockNode(False, currentBlockNode.name, {}, currentBlockNode)
+			currentBlockNode.children.append(node)
+			currentBlockNode = node
 			state1 = 5
 			scopeCounter = scopeCounter + 1
 		elif t == "f" or t == "w":
@@ -317,7 +328,7 @@ def scopeChecking(t):
 def addVars(t):
 	global state2
 	global lastType
-	global currentNode
+	global currentBlockNode
 	global lastSymbol
 	global lastNum
 	global relAddress
@@ -338,7 +349,7 @@ def addVars(t):
 		elif t == "[":
 			state2 = 3
 		elif t == ";" or t == ")" or t == ",":
-			if currentNode.duplicate(lastSymbol):
+			if currentBlockNode.duplicate(lastSymbol):
 				return "Duplicate Variable Definition: \'{}\'' Already Exists In This Scope!".format(lastSymbol)
 			if lastType == "void":
 				return "Variable \'{}\' Can Not Be Defined Of Type \'void\'".format(lastSymbol)
@@ -346,11 +357,11 @@ def addVars(t):
 			if lastNum > 1:
 				aadr = relArrAddress
 				relArrAddress = relArrAddress + 4 * lastNum
-			currentNode.setSymbol(lastSymbol, relAddress, aadr, lastNum)
+			currentBlockNode.setSymbol(lastSymbol, relAddress, aadr, lastNum)
 			relAddress = relAddress + 4
 			state2 = 0
 			if t == ")":
-				functions[currentNode.name].append(currentNode.symbolTable.copy())
+				functions[currentBlockNode.name].append(currentBlockNode.symbolTable.copy())
 		else:
 			state2 = -1
 
@@ -372,16 +383,16 @@ def funTypeChecking(t):
 
 	elif state3 == 1:
 		if t == ";":
-			if functions[currentNode.name][0] == "int"
-				return "Function \'{}\' Must Return A Value of Type \'int\'".format(currentNode.name)
+			if functions[currentBlockNode.name][0] == "int"
+				return "Function \'{}\' Must Return A Value of Type \'int\'".format(currentBlockNode.name)
 			state3 = 0;
 		else:
 			state3 = 2;
 
 	elif state3 == 2:
 		if t == ";"
-			if functions[currentNode.name][0] == "void"
-				return "Function \'{}\' Must Return A Value of Type \'void\'".format(currentNode.name)
+			if functions[currentBlockNode.name][0] == "void"
+				return "Function \'{}\' Must Return A Value of Type \'void\'".format(currentBlockNode.name)
 		state3 = 0	
 
 
@@ -400,7 +411,7 @@ def codeGen(nonTerminal, token):
 	global programBlock
 	global semanticStack
 
-	# print currentNode.symbolTable
+	# print currentBlockNode.symbolTable
 
 	if nonTerminal == 'a' :
 		if token[1] == 'main' :
@@ -466,8 +477,8 @@ def codeGen(nonTerminal, token):
 		temp1 = getTemp()
 		# print token[1] + " This is the token which is going to be pushed inside of the semantic stack!"
 		# print "The semantic stack is at: " + str(semanticStack)
-		# print (findVar(token[1], currentNode))[2][1]
-		i = (findVar(token[1], currentNode))[1][0]
+		# print (findVar(token[1], currentBlockNode))[2][1]
+		i = (findVar(token[1], currentBlockNode))[1][0]
 		semanticStack.append(programBlockPointer)
 		print programBlockPointer
 		programBlock.append(['ASSIGN','#' + str(i),temp,''])

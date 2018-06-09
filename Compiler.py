@@ -20,7 +20,7 @@ utilities.eofWatch = False
 tokenPopped = False
 utilities.isNum = False
 
-utilities.root = utilities.currentNode
+utilities.root = utilities.currentBlockNode
 
 # These information will be used to prevent the parser from panic mode loops!
 
