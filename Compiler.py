@@ -254,6 +254,8 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 
 # print utilities.programBlock
 
+# print utilities.functions
+
 with open('program.txt', 'w') as program :
 	for item in utilities.programBlock:
   		print>>program, item

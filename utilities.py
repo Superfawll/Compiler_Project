@@ -13,10 +13,10 @@ eofWatch = False
 tokenNum = 0
 isNum = False
 
-class Node:
-	def __init__(self):
-    	self.returned = False
-    	self.children = []
+# class Node:
+# 	def __init__(self):
+#     	self.returned = False
+#     	self.children = []
 
 class BlockNode:
     def __init__(self, fun, n, s, p):
@@ -25,8 +25,8 @@ class BlockNode:
         self.symbolTable = s
         self.parent = p
         self.children = []
-        self.root = Node()
-        self.curNode = self.root
+        # self.root = Node()
+        # self.curNode = self.root
 
     def printSubTree(self, tn):
     	print "{} ******************** {}".format(tn, self.name)
@@ -54,13 +54,14 @@ class BlockNode:
 state1 = 0
 scopeCounter = 0
 state2 = 0
+state3 = 0
 lastType = ""
 lastSymbol = ""
 lastNum = 1
 relAddress = 0
 relArrAddress = 1300
 tempAddress = 301
-currentBlockNode = BlockNode("", {}, None)
+currentBlockNode = BlockNode(True, "", {}, None)
 functions = {'output':['void', -1, {'x': [0, 1]}]}
 
 semanticStack = []
@@ -261,7 +262,7 @@ def scopeChecking(t):
 			node = BlockNode(True, lastSymbol, {}, currentBlockNode)
 			currentBlockNode.children.append(node)
 			currentBlockNode = node
-			currentBlockNode.root.returned = False if lastType == "int" else True
+			# currentBlockNode.root.returned = False if lastType == "int" else True
 			relAddress = 0
 			relArrAddress = 1300
 			tempAddress = 301
@@ -286,26 +287,26 @@ def scopeChecking(t):
 			currentBlockNode = node
 			scopeCounter = scopeCounter + 1
 		elif t == "}":
-			currentBlockNode.checkReturned()
+			# currentBlockNode.checkReturned()
 			if scopeCounter == 0:
-				if not currentBlockNode.root.returned:
-					return "Function \'{}\' Has Not Retured A Value".format(currentBlockNode.name)
+				# if not currentBlockNode.root.returned:
+				# 	return "Function \'{}\' Has Not Retured A Value".format(currentBlockNode.name)
 				state1 = 0
 			else:
 				scopeCounter = scopeCounter - 1
 			currentBlockNode = currentBlockNode.parent
 		elif t == "w" or t == "f":
 			state1 = 6
-			node = Node()
-			currentBlockNode.curNode.children.append([node])
-			currentBlockNode.curNode = node
+			# node = Node()
+			# currentBlockNode.curNode.children.append([node])
+			# currentBlockNode.curNode = node
 		elif t == "e":
 			state1 = 8
-			node = Node()
-			currentBlockNode.curNode.children[-1].append(node)
-			currentBlockNode.curNode = node
-		elif t == "r":
-			currentBlockNode.root.returned = True
+			# node = Node()
+			# currentBlockNode.curNode.children[-1].append(node)
+			# currentBlockNode.curNode = node
+		# elif t == "r":
+		# 	currentBlockNode.root.returned = True
 
 	elif state1 == 6:
 		state1 = 7 if t == "(" else -1
@@ -323,17 +324,17 @@ def scopeChecking(t):
 			scopeCounter = scopeCounter + 1
 		elif t == "f" or t == "w":
 			state1 = 6
-			node = Node()
-			currentBlockNode.curNode.children.append([node])
-			currentBlockNode.curNode = node
-		elif t == "e":
-			node = Node()
-			currentBlockNode.curNode.children[-1].append(node)
-			currentBlockNode.curNode = node
-		elif:
+			# node = Node()
+			# currentBlockNode.curNode.children.append([node])
+			# currentBlockNode.curNode = node
+		# elif t == "e":
+			# node = Node()
+			# currentBlockNode.curNode.children[-1].append(node)
+			# currentBlockNode.curNode = node
+		elif t != "e":
 			state1 = 5
-			if t == "r":
-			currentBlockNode.curNode.returned = True
+			# if t == "r":
+			# currentBlockNode.curNode.returned = True
 
 	return "" if state1 == -1 else "OK!"
 
@@ -396,17 +397,19 @@ def funTypeChecking(t):
 
 	elif state3 == 1:
 		if t == ";":
-			if functions[currentBlockNode.name][0] == "int"
+			if functions[currentBlockNode.name][0] == "int":
 				return "Function \'{}\' Must Return A Value of Type \'int\'".format(currentBlockNode.name)
 			state3 = 0;
 		else:
 			state3 = 2;
 
 	elif state3 == 2:
-		if t == ";"
-			if functions[currentBlockNode.name][0] == "void"
+		if t == ";":
+			if functions[currentBlockNode.name][0] == "void":
 				return "Function \'{}\' Must Return A Value of Type \'void\'".format(currentBlockNode.name)
 		state3 = 0	
+
+	return "OK!"
 
 
 def findVar(symbol, node):
@@ -460,7 +463,7 @@ def codeGen(nonTerminal, token):
 		programBlock.append('')
 	elif nonTerminal == 'l' :
 		programBlock[semanticStack[-1]] = ['JPF',semanticStack[-2],programBlockPointer + 1,'']
-		print programBlock[semanticStack[-1]]
+		# print programBlock[semanticStack[-1]]
 		programBlock.append(['JP',semanticStack[-3],'',''])
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.pop()
@@ -478,8 +481,8 @@ def codeGen(nonTerminal, token):
 	elif nonTerminal == 'w2' :
 		# print "The semantic stack is at: " + str(semanticStack)
 		programBlock.append(['ASSIGN',semanticStack[-1],semanticStack[-2],''])
-		print "The program block is at: " + str(programBlockPointer) + " and the pushed block is: " + str(programBlock[-1])
-		print programBlock[programBlockPointer]
+		# print "The program block is at: " + str(programBlockPointer) + " and the pushed block is: " + str(programBlock[-1])
+		# print programBlock[programBlockPointer]
 
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.pop()
@@ -493,7 +496,7 @@ def codeGen(nonTerminal, token):
 		# print (findVar(token[1], currentBlockNode))[2][1]
 		i = (findVar(token[1], currentBlockNode))[1][0]
 		semanticStack.append(programBlockPointer)
-		print programBlockPointer
+		# print programBlockPointer
 		programBlock.append(['ASSIGN','#' + str(i),temp,''])
 		programBlock.append(['ADD',temp,500,temp1])
 		programBlockPointer = programBlockPointer + 2
@@ -503,12 +506,12 @@ def codeGen(nonTerminal, token):
 		tempAddr1 = getTemp()
 		tempAddr2 = getTemp()
 		gett2 = getTemp()
-		print "The semantic stack is at: " + str(semanticStack)
+		# print "The semantic stack is at: " + str(semanticStack)
 		pointer = semanticStack[-3]
-		print pointer
-		print "The semantic stack is at: " + str(semanticStack)
+		# print pointer
+		# print "The semantic stack is at: " + str(semanticStack)
 		temp = semanticStack.pop()
-		print "The semantic stack is at: " + str(semanticStack)
+		# print "The semantic stack is at: " + str(semanticStack)
 		semanticStack.pop()
 		# print temp
 		# 
@@ -520,7 +523,7 @@ def codeGen(nonTerminal, token):
 		with open('program.txt', 'w') as program :
 			for item in programBlock:
   				print>>program, item
-  		print pointer
+  		# print pointer
 		wrongAddresses = programBlock[pointer]
 		# print wrongAddresses
 		wrongAddresses[1] = wrongAddresses[1].replace('#','')

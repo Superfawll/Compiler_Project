@@ -18,6 +18,10 @@ int a[10];
 	}
 	a = 25;
 }*/
+
+int fun(int x[], int y[], int z[]){
+	return 0;
+}
         
 void main(void){/**/
 	int a[2];
