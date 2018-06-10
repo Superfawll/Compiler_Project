@@ -1,4 +1,4 @@
-import utilities
+﻿import utilities
 import re
 
 rules = utilities.getRules("grammar.txt")
