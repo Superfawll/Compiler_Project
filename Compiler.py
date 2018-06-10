@@ -29,12 +29,11 @@ stackPop = 0
 previousState = ''
 previousToken = ''
 
-# tokenSemaphore
 
 with open("reductions.txt", "w") as reductionSequenceFile :
 	while True :
 
-		if (codeString != "" and not done):
+		if (codeString != "" and not done and utilities.tokenSemaphore == 0):
 			current = r"\A\S*(\s+|\Z)"
 			utilities.contiguousSubString = re.match(current, codeString)
 			if utilities.contiguousSubString :
@@ -80,7 +79,7 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 				quit()
 				done = True
 
-		if (utilities.tokenNum >= 1) : 
+		if (utilities.tokenNum >= 1 and utilities.tokenSemaphore == 1) : 
 			if (not tokenPopped) : 
 				t = utilities.tokens[utilities.tokenIterator][0]
 
@@ -205,6 +204,7 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 					previousState = ''
 					previousToken = ''
 					stackPop = 0
+					utilities.tokenSemaphore = 0
 					# print "Input shift operation done, going to state: " + str(action[1:])
 				if action[0] == 'r' :
 					reductionSequenceFile.write(action[1:] + "\n")

@@ -12,6 +12,8 @@ tokens = []
 eofWatch = False
 tokenNum = 0
 isNum = False
+tokenSemaphore = 0
+
 
 # class Node:
 # 	def __init__(self, p):
@@ -76,7 +78,6 @@ lastSymbol = ""
 lastNum = 1
 isArray = False
 relAddress = 0
-relParAddress = -4
 relArrAddress = 1300
 tempAddress = 301
 currentBlockNode = BlockNode(True, "", {}, None)
@@ -121,6 +122,7 @@ def matchToken(candid):
 	global tokenNum
 	global isNum
 	global lastFunc
+	global tokenSemaphore
 
 	if (contiguousSubString[0] == '+' or contiguousSubString[0] == '-') and candid == "Keyword" :
 		if (tokens[-1][0] in numSignIndicator and tokens[-1][0] != ')') :
@@ -141,15 +143,18 @@ def matchToken(candid):
 			if sKey in mapping.keys() :
 				tokens.append((mapping[sKey], sKey))
 				tokenNum = tokenNum + 1
+				tokenSemaphore = 1
 				# print sKey
 			else :
 				tokens.append((sKey, sKey))
 				tokenNum = tokenNum + 1
+				tokenSemaphore = 1
 			contiguousSubString = re.sub(keyword, "", contiguousSubString)
 			if sKey == "EOF" :
 				eofWatch = True
 				tokens.append(('$', 'none'))
 				tokenNum = tokenNum + 1
+				tokenSemaphore = 1
 			return True
 		else :
 			return False
@@ -165,6 +170,7 @@ def matchToken(candid):
 			tag = "i" if candid == "ID" else "n"
 			tokens.append((tag, matched))
 			tokenNum = tokenNum + 1
+			tokenSemaphore = 1
 			contiguousSubString = re.sub(pattern, "", contiguousSubString)
 			return True
 		else :
@@ -258,7 +264,6 @@ def scopeChecking(t):
 	global state1
 	global currentBlockNode
 	global relAddress
-	global relParAddress
 	global relArrAddress
 	global tempAddress
 	global lastSymbol
@@ -288,7 +293,6 @@ def scopeChecking(t):
 			currentBlockNode = node
 			# currentBlockNode.root.returned = False if lastType == "int" else True
 			relAddress = 0
-			relParAddress = -4
 			relArrAddress = 1300
 			tempAddress = 301
 			state1 = 3
@@ -376,7 +380,6 @@ def addVars(t):
 	global lastNum
 	global isArray
 	global relAddress
-	global relParAddress
 	global relArrAddress
 
 	if state2 == 0:
@@ -401,19 +404,13 @@ def addVars(t):
 				return "Variable \'{}\' Can Not Be Defined Of Type \'void\'".format(lastSymbol)
 
 			aa = -1
-			if state1 == 3 or state1 == 4:
-				ra = relParAddress
-				relParAddress = relParAddress - 4
-			else:
-				ra = relAddress
-				relAddress = relAddress + 4
-				if isArray:
-					if lastNum < 1:
-						return "Can Not Define Array Of Size {}!".format(lastNum)
-					else:
-						aa = relArrAddress
-						relArrAddress = relArrAddress + 4 * lastNum
-			currentBlockNode.setSymbol(lastSymbol, ra, aa, lastNum if isArray else 1, isArray)
+			if isArray and not (state1 == 3 or state1 == 4):
+				if lastNum < 1:
+					return "Can Not Define Array Of Size {}!".format(lastNum)
+				else:
+					aa = relArrAddress
+					relArrAddress = relArrAddress + 4 * lastNum
+			currentBlockNode.setSymbol(lastSymbol, relAddress, aa, lastNum if isArray else 1, isArray)
 
 			state2 = 0
 			if t == ")":
@@ -557,7 +554,7 @@ def codeGen(nonTerminal, token):
 		i = (findVar(token[1], currentBlockNode))[1][0]
 		semanticStack.append(programBlockPointer)
 		programBlock.append(['ASSIGN','#' + str(i),temp,''])
-		programBlock.append(['ADD',temp,500,temp1])
+		# programBlock.append(['ADD',temp,500,temp1])
 		programBlockPointer = programBlockPointer + 2
 		semanticStack.append('@' + str(temp1))
 	
