@@ -215,10 +215,10 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 							parsingStack = ['0']
 					parsingStack.append(r[0])
 					parsingStack.append(gotoTable[r[0]][parsingStack[-2]])
-					if (r[0] == 'a') :
-						utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 2])
-					else  :
-						utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 1])
+					# if (r[0] == 'a') :
+					# 	utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 2])
+					# else  :
+					# 	utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 1])
 					# print "Reduce operation done with rule: " + str(int(action[1:])) + " !"
 			
 			elif utilities.tokenNum > 1 :	
@@ -245,9 +245,9 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 
 				continue
 			
-# utilities.root.printSubTree(0)
-# print "\n\n"
-# print utilities.functions
+utilities.root.printSubTree(0)
+print "\n\n"
+print utilities.functions
 
 # utilities.root.printSubTree(0)
 # print utilities.functions

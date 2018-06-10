@@ -19,7 +19,9 @@ int a[10];
 	a = 25;
 }*/
 
-int fun(int x[], int y[], int z[]){
+int fun(int x[], int y, int z[]){
+	int a;
+	int b[10];
 	return 0;
 }
         

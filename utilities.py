@@ -34,8 +34,8 @@ class BlockNode:
     	for n in self.children:
     		n.printSubTree(tn + 1)
 
-    def setSymbol(self, ls, ra, raa, ln):
-    	self.symbolTable[ls] = [ra, raa, ln]
+    def setSymbol(self, ls, ra, raa, ln, ia):
+    	self.symbolTable[ls] = [ra, raa, ln, ia]
 
     def duplicate(self, symbol):
     	return symbol in self.symbolTable
@@ -58,11 +58,13 @@ state3 = 0
 lastType = ""
 lastSymbol = ""
 lastNum = 1
+isArray = False
 relAddress = 0
+relParAddress = -4
 relArrAddress = 1300
 tempAddress = 301
 currentBlockNode = BlockNode(True, "", {}, None)
-functions = {'output':['void', -1, {'x': [0, 1]}]}
+functions = {'output':['void', -1, {'x': [-4, -1, 1, False]}]}
 
 semanticStack = []
 programBlock = []
@@ -236,6 +238,7 @@ def scopeChecking(t):
 	global state1
 	global currentBlockNode
 	global relAddress
+	global relParAddress
 	global relArrAddress
 	global tempAddress
 	global lastSymbol
@@ -249,10 +252,9 @@ def scopeChecking(t):
 
 	elif state1 == 2: 
 		# Checking whether main is the last function declaration or not!
-		if "main" in functions.keys() and lastSymbol != "main":
-				return "\'{}\'' Is Defined After \'main\'".format(lastSymbol)
-
 		if t == "(":
+			if "main" in functions.keys() and lastSymbol != "main":
+				return "\'{}\'' Is Defined After \'main\'".format(lastSymbol)
 			# Checking whether the function defined has a duplicate name as another function or not!
 			if lastSymbol in functions.keys():
 				return "Duplicate Function Definition: \'{}\'' Already Exists!".format(lastSymbol)
@@ -264,6 +266,7 @@ def scopeChecking(t):
 			currentBlockNode = node
 			# currentBlockNode.root.returned = False if lastType == "int" else True
 			relAddress = 0
+			relParAddress = -4
 			relArrAddress = 1300
 			tempAddress = 301
 			state1 = 3
@@ -345,14 +348,16 @@ def addVars(t):
 	global currentBlockNode
 	global lastSymbol
 	global lastNum
+	global isArray
 	global relAddress
+	global relParAddress
 	global relArrAddress
 
 	if state2 == 0:
 		if t == "g" or t == "v":
 			state2 = 1
 			lastType = "int" if t == "g" else "void"
-			lastNum = 1
+			isArray = False
 
 	elif state2 == 1:
 		state2 = 2 if t == "i" else 0
@@ -362,17 +367,28 @@ def addVars(t):
 			state2 = 0
 		elif t == "[":
 			state2 = 3
+			isArray = True
 		elif t == ";" or t == ")" or t == ",":
 			if currentBlockNode.duplicate(lastSymbol):
 				return "Duplicate Variable Definition: \'{}\'' Already Exists In This Scope!".format(lastSymbol)
 			if lastType == "void":
 				return "Variable \'{}\' Can Not Be Defined Of Type \'void\'".format(lastSymbol)
-			aadr = -1
-			if lastNum > 1:
-				aadr = relArrAddress
-				relArrAddress = relArrAddress + 4 * lastNum
-			currentBlockNode.setSymbol(lastSymbol, relAddress, aadr, lastNum)
-			relAddress = relAddress + 4
+
+			aa = -1
+			if state1 == 3 or state1 == 4:
+				ra = relParAddress
+				relParAddress = relParAddress - 4
+			else:
+				ra = relAddress
+				relAddress = relAddress + 4
+				if isArray:
+					if lastNum < 1:
+						return "Can Not Define Array Of Size {}!".format(lastNum)
+					else:
+						aa = relArrAddress
+						relArrAddress = relArrAddress + 4 * lastNum
+			currentBlockNode.setSymbol(lastSymbol, ra, aa, lastNum if isArray else 1, isArray)
+
 			state2 = 0
 			if t == ")":
 				functions[currentBlockNode.name].append(currentBlockNode.symbolTable.copy())
@@ -380,7 +396,13 @@ def addVars(t):
 			state2 = -1
 
 	elif state2 == 3:
-		state2 = 4 if t == "n" else -1
+		if t == "n":
+			state2 = 4
+		elif t == "]":
+			state2 = 2
+			lastNum = -1
+		else:
+			state2 = -1
 
 	elif state2 == 4:
 		state2 = 2 if t == "]" else -1
