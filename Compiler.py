@@ -29,6 +29,8 @@ stackPop = 0
 previousState = ''
 previousToken = ''
 
+# tokenSemaphore
+
 with open("reductions.txt", "w") as reductionSequenceFile :
 	while True :
 
@@ -79,7 +81,7 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 				done = True
 
 		if (utilities.tokenNum >= 1) : 
-			if (not tokenPopped) :
+			if (not tokenPopped) : 
 				t = utilities.tokens[utilities.tokenIterator][0]
 
 				# print " The stack is at: " + str(parsingStack) +  " and the input is at: " + utilities.tokens[utilities.tokenIterator][0]

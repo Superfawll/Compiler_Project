@@ -3,7 +3,7 @@ import re
 ID = r"([A-Za-z]([A-Za-z]|[0-9])*)"
 NUM = r"((\+|-)?([0-9])+)"
 keyword1 = r"(EOF|int|void|if|else|while|return)"
-keyword2 = r"(;|\[|\]|\(|\)|\{|\}|,|=|<|==|\+|\*|-)"
+keyword2 = r"(;|\[|\]|\(|\)|\{|\}|,|=(?!=)|<|==|\+|\*|-)"
 nonTerminals = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','x','t','u','s','w1','y','c','d','h','x2','x4','x7','x5','x6','k','x9','o','m','r1','p','w2','j','b','a','x3','x1','x8','l']
 terminals = ['(',')','*','+',',','-',';','<','=','[',']','e','f','g','i','n','q','r','v','w','z','{','}','$']
 
@@ -14,9 +14,28 @@ tokenNum = 0
 isNum = False
 
 # class Node:
-# 	def __init__(self):
-#     	self.returned = False
-#     	self.children = []
+# 	def __init__(self, p):
+# 		self.returned = False
+# 		self.children = []
+# 		self.parent = None
+
+# 	def checkReturned(self):
+# 		if self.returned:
+# 			print "returned"
+# 			return
+# 		else:
+# 			for c in self.children:
+# 				r = True
+# 				if cc in c:
+# 					if not cc.checkReturned():
+# 						r = False
+# 				if r:
+# 					self.returned = True
+# 					print "returned"
+# 					return
+# 			print "not returned"
+# 			return
+
 
 class BlockNode:
     def __init__(self, fun, n, s, p):
@@ -25,7 +44,7 @@ class BlockNode:
         self.symbolTable = s
         self.parent = p
         self.children = []
-        # self.root = Node()
+        # self.root = Node(p.curNode if p else None)
         # self.curNode = self.root
 
     def printSubTree(self, tn):
@@ -39,9 +58,6 @@ class BlockNode:
 
     def duplicate(self, symbol):
     	return symbol in self.symbolTable
-
-    def checkReturned():
-    	return
 
 
 # arrayAddressBase = 1000
@@ -82,7 +98,8 @@ mapping = { "else": "e",
 			"return": "r",
 			"void": "v",
 			"while": "w",
-			"EOF":"z" }	
+			"EOF": "z",
+			"==": "q"}	
 
 numSignIndicator = ['[','(','*','=',',','+','-','<','q','e','r']
 
@@ -118,15 +135,16 @@ def matchToken(candid):
 		sKey = re.match(keyword, contiguousSubString)
 		if sKey :
 			sKey = sKey.group()
-			if len(tokens) > 1 and tokens[len(tokens) - 1][0] == "=" and sKey == "=" :
-				tokens[len(tokens) - 1] = ('q','==')
+			# if len(tokens) > 1 and tokens[len(tokens) - 1][0] == "=" and sKey == "=" :
+			# 	tokens[len(tokens) - 1] = ('q','==')
+			# else :
+			if sKey in mapping.keys() :
+				tokens.append((mapping[sKey], sKey))
+				tokenNum = tokenNum + 1
+				# print sKey
 			else :
-				if sKey in mapping.keys() :
-					tokens.append((mapping[sKey], sKey))
-					tokenNum = tokenNum + 1
-				else :
-					tokens.append((sKey, sKey))
-					tokenNum = tokenNum + 1
+				tokens.append((sKey, sKey))
+				tokenNum = tokenNum + 1
 			contiguousSubString = re.sub(keyword, "", contiguousSubString)
 			if sKey == "EOF" :
 				eofWatch = True
@@ -254,8 +272,8 @@ def scopeChecking(t):
 		state1 = 2 if t == "i" else -1
 
 	elif state1 == 2: 
-		# Checking whether main is the last function declaration or not!
 		if t == "(":
+			# Checking whether main is the last function declaration or not!
 			if "main" in functions.keys() and lastSymbol != "main":
 				return "\'{}\'' Is Defined After \'main\'".format(lastSymbol)
 			# Checking whether the function defined has a duplicate name as another function or not!
@@ -291,10 +309,11 @@ def scopeChecking(t):
 			# Inserting the new scope inside of the symbol table linked-list
 			node = BlockNode(False, currentBlockNode.name, {}, currentBlockNode)
 			currentBlockNode.children.append(node)
+			currentBlockNode.curNode.children.append(node.root)
 			currentBlockNode = node
 			scopeCounter = scopeCounter + 1
 		elif t == "}":
-			# currentBlockNode.checkReturned()
+			# currentBlockNode.root.checkReturned()
 			if scopeCounter == 0:
 				# if not currentBlockNode.root.returned:
 				# 	return "Function \'{}\' Has Not Retured A Value".format(currentBlockNode.name)
@@ -304,16 +323,17 @@ def scopeChecking(t):
 			currentBlockNode = currentBlockNode.parent
 		elif t == "w" or t == "f":
 			state1 = 6
-			# node = Node()
+			# node = Node(currentBlockNode.curNode)
 			# currentBlockNode.curNode.children.append([node])
 			# currentBlockNode.curNode = node
 		elif t == "e":
 			state1 = 8
-			# node = Node()
+			# node = Node(currentBlockNode.curNode)
 			# currentBlockNode.curNode.children[-1].append(node)
 			# currentBlockNode.curNode = node
 		# elif t == "r":
 		# 	currentBlockNode.root.returned = True
+		# 	currentBlockNode.curNode = currentBlockNode.curNode.parent
 
 	elif state1 == 6:
 		state1 = 7 if t == "(" else -1
@@ -326,22 +346,24 @@ def scopeChecking(t):
 		if t == "{":
 			node = BlockNode(False, currentBlockNode.name, {}, currentBlockNode)
 			currentBlockNode.children.append(node)
+			# currentBlockNode.curNode = node.root
 			currentBlockNode = node
 			state1 = 5
 			scopeCounter = scopeCounter + 1
 		elif t == "f" or t == "w":
 			state1 = 6
-			# node = Node()
+			# node = Node(currentBlockNode.curNode)
 			# currentBlockNode.curNode.children.append([node])
 			# currentBlockNode.curNode = node
 		# elif t == "e":
-			# node = Node()
+			# node = Node(currentBlockNode.curNode)
 			# currentBlockNode.curNode.children[-1].append(node)
 			# currentBlockNode.curNode = node
 		elif t != "e":
 			state1 = 5
 			# if t == "r":
-			# currentBlockNode.curNode.returned = True
+			# 	currentBlockNode.curNode.returned = True
+			# 	currentBlockNode.curNode = currentBlockNode.curNode.parent
 
 	return "" if state1 == -1 else "OK!"
 
@@ -598,7 +620,7 @@ def codeGen(nonTerminal, token):
 			return 0
 		else :
 			funcID = semanticStack[-1]
-			print functions[funcID]
+			# print functions[funcID]
 			if (not len(argsList) == len(functions[funcID])):
 				print "Parameter count does not match!" + str(argsList)
 		
