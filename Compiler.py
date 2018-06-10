@@ -33,7 +33,7 @@ previousToken = ''
 with open("reductions.txt", "w") as reductionSequenceFile :
 	while True :
 
-		if (codeString != "" and not done and utilities.tokenSemaphore == 0):
+		if (codeString != "" and not done):
 			current = r"\A\S*(\s+|\Z)"
 			utilities.contiguousSubString = re.match(current, codeString)
 			if utilities.contiguousSubString :
@@ -79,7 +79,7 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 				quit()
 				done = True
 
-		if (utilities.tokenNum >= 1 and utilities.tokenSemaphore == 1) : 
+		if (utilities.tokenNum >= 1) : 
 			if (not tokenPopped) : 
 				t = utilities.tokens[utilities.tokenIterator][0]
 
@@ -87,6 +87,7 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 
 				if (t[0] == 'n') : utilities.lastNum = int(utilities.tokens[utilities.tokenIterator][1])
 				if (t[0] == 'i') : utilities.lastSymbol = utilities.tokens[utilities.tokenIterator][1]
+				# print utilities.lastSymbol
 
 				action = actionTable[t][parsingStack[-1]]
 				
@@ -221,8 +222,11 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 						utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 2])
 					elif (r[0] == 'x3')  :
 						utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 5])
+					elif (r[0] == 'C') :
+						utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator])
 					else :
 						utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 1])
+
 					# print "Reduce operation done with rule: " + str(int(action[1:])) + " !"
 			
 			elif utilities.tokenNum > 1 :	
@@ -270,9 +274,7 @@ with open('output.txt', 'w') as program :
 	for item in string:
   		print>>program, item
 
-# with open('output.txt', 'w') as program :
-# 	for item in utilities.programBlock:
-#   		print>>program, item
+
 
 # with open('program.txt', 'w') as program :
 # 	for item in utilities.programBlock:
