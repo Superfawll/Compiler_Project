@@ -4,7 +4,7 @@ ID = r"([A-Za-z]([A-Za-z]|[0-9])*)"
 NUM = r"((\+|-)?([0-9])+)"
 keyword1 = r"(EOF|int|void|if|else|while|return)"
 keyword2 = r"(;|\[|\]|\(|\)|\{|\}|,|=|<|==|\+|\*|-)"
-nonTerminals = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','x','t','u','s','w1','y','c','d','h','x2','x4','x7','x5','x6','k','o','m','r1','p','w2','j','b','a','x3','x1','x8','l']
+nonTerminals = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','x','t','u','s','w1','y','c','d','h','x2','x4','x7','x5','x6','k','x9','o','m','r1','p','w2','j','b','a','x3','x1','x8','l']
 terminals = ['(',')','*','+',',','-',';','<','=','[',']','e','f','g','i','n','q','r','v','w','z','{','}','$']
 
 contiguousSubString = ""
@@ -69,9 +69,10 @@ functions = {'output':['void', -1, {'x': [-4, -1, 1, False]}]}
 semanticStack = []
 programBlock = []
 programBlock.append(['ASSIGN','#200',500,''])
-programBlock.append('')
-programBlockPointer = 2
+programBlockPointer = 1
 tokenIterator = 0
+lastFunc = ''
+isFirstFunc = False
 
 # tempAddr = 500
 
@@ -102,6 +103,7 @@ def matchToken(candid):
 	global eofWatch
 	global tokenNum
 	global isNum
+	global lastFunc
 
 	if (contiguousSubString[0] == '+' or contiguousSubString[0] == '-') and candid == "Keyword" :
 		if (tokens[-1][0] in numSignIndicator and tokens[-1][0] != ')') :
@@ -154,11 +156,11 @@ def matchToken(candid):
 def getRules(file):
 	rules = []
 	with open(file, "r") as grammarFile :
-		for i in range(80) :
+		for i in range(81) :
 			rule = grammarFile.readline().split("\t")
-			if not i in [32, 34, 35, 40, 42, 43, 44, 48, 49, 50, 9] :
+			if not i in [32, 34, 35, 40, 42, 43, 44, 49, 6, 50, 9] :
 				rules.append([rule[0], (len(rule[1]) - 1) * 2])
-			elif i != 50 and i != 9 :
+			elif i != 50 :
 				rules.append([rule[0], ((len(rule[1]) - 1) - 1) * 2])
 			elif i == 50 :
 				rules.append([rule[0], 14])
@@ -178,9 +180,9 @@ def getGotoTable(file):
 		gotoTable[i] = {}
 
 	iterator = 0
-	for i in range(0, 121) :
+	for i in range(0, 122) :
 		for j in nonTerminals :
-			gotoTable[j][str(i)] = string[(iterator * 4) + i * 213: ((iterator + 1) * 4 + i * 213)].replace(' ', '')
+			gotoTable[j][str(i)] = string[(iterator * 4) + i * 217: ((iterator + 1) * 4 + i * 217)].replace(' ', '')
 			iterator = iterator + 1
 		iterator = 0
 	# print gotoTable['x1']['54']
@@ -197,7 +199,7 @@ def getActionTable(file):
 		actionTable [i] = {}
 
 	iterator = 0
-	for i in range(0, 121) :
+	for i in range(0, 122) :
 		for j in terminals :
 			actionTable[j][str(i)] = string[(iterator * 4) + i * 97: ((iterator + 1) * 4 + i * 97)].replace(' ', '')
 			iterator = iterator + 1
@@ -243,6 +245,7 @@ def scopeChecking(t):
 	global tempAddress
 	global lastSymbol
 	global lastNum
+	global lastFunc
 
 	if state1 == 0:
 		state1 = 1 if (t == "g" or t == "v") else (9 if t == "z" else 0)
@@ -261,6 +264,7 @@ def scopeChecking(t):
 			else:
 				functions[lastSymbol] = [lastType, -1]
 			# Inserting the new identifier inside of the symbol table linked-list
+			lastFunc = lastSymbol
 			node = BlockNode(True, lastSymbol, {}, currentBlockNode)
 			currentBlockNode.children.append(node)
 			currentBlockNode = node
@@ -448,22 +452,33 @@ def codeGen(nonTerminal, token):
 	global programBlockPointer
 	global programBlock
 	global semanticStack
+	global isFirstFunc
+	global lastFunc
 
 	# print currentBlockNode.symbolTable
 
 	if nonTerminal == 'a' :
+		if (not isFirstFunc) : 
+			programBlock.append('')
+			semanticStack.append(programBlockPointer)
+			programBlockPointer = programBlockPointer + 1
+			isFirstFunc = True
 		if token[1] == 'main' :
-			programBlock[1] = ['JP',programBlockPointer,'','']
+			pointer = semanticStack.pop()
+			programBlock[pointer] = ['JP',programBlockPointer,'','']
 		functions[token[1]][1] = programBlockPointer
+	
 	elif nonTerminal == 'b' :
 		# print semanticStack
 		# print programBlock
 		semanticStack.pop()
+	
 	elif nonTerminal == 'h' :
 		semanticStack.append(programBlockPointer)
 		# print "The semantic stack is at: " + str(semanticStack)
 		programBlockPointer = programBlockPointer + 1
 		programBlock.append('')
+	
 	elif nonTerminal == 'd' :
 
 		programBlock[semanticStack[-1]] = ['JPF',semanticStack[-2],programBlockPointer + 1,'']
@@ -472,17 +487,21 @@ def codeGen(nonTerminal, token):
 		semanticStack.append(programBlockPointer)
 		programBlockPointer = programBlockPointer + 1
 		programBlock.append('')
+	
 	elif nonTerminal == 'c' :
 		# print semanticStack[-1]
 		# print programBlock[semanticStack[-1]]
 		programBlock[semanticStack[-1]] = ['JP',programBlockPointer,'','']
 		semanticStack.pop()
+	
 	elif nonTerminal == 'j' :
 		semanticStack.append(programBlockPointer)
+	
 	elif nonTerminal == 'o' :
 		semanticStack.append(programBlockPointer)
 		programBlockPointer = programBlockPointer + 1
 		programBlock.append('')
+	
 	elif nonTerminal == 'l' :
 		programBlock[semanticStack[-1]] = ['JPF',semanticStack[-2],programBlockPointer + 1,'']
 		# print programBlock[semanticStack[-1]]
@@ -491,72 +510,49 @@ def codeGen(nonTerminal, token):
 		semanticStack.pop()
 		semanticStack.pop()
 		semanticStack.pop()
+	
 	elif nonTerminal == 'k' :
 		semanticStack.append(programBlockPointer)
+	
 	elif nonTerminal == 'm' :
 		# Return address of the function is pushed at the begining, so just assigning the return value to the return address!
-		programBlock.append(['ASSIGN',semanticStack[-1],semanticStack[-2],''])
+		# programBlock.append(['ASSIGN',semanticStack[-1],semanticStack[-2],''])
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.pop()
 		semanticStack.pop()
 		semanticStack.append(programBlockPointer)
+	
 	elif nonTerminal == 'w2' :
-		# print "The semantic stack is at: " + str(semanticStack)
 		programBlock.append(['ASSIGN',semanticStack[-1],semanticStack[-2],''])
-		# print "The program block is at: " + str(programBlockPointer) + " and the pushed block is: " + str(programBlock[-1])
-		# print programBlock[programBlockPointer]
-
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.pop()
 		result = semanticStack.pop()
 		semanticStack.append(result)
+	
 	elif nonTerminal == 'r1' :
 		temp = getTemp()
 		temp1 = getTemp()
-		# print token[1] + " This is the token which is going to be pushed inside of the semantic stack!"
-		# print "The semantic stack is at: " + str(semanticStack)
-		# print (findVar(token[1], currentBlockNode))[2][1]
 		i = (findVar(token[1], currentBlockNode))[1][0]
 		semanticStack.append(programBlockPointer)
-		# print programBlockPointer
 		programBlock.append(['ASSIGN','#' + str(i),temp,''])
 		programBlock.append(['ADD',temp,500,temp1])
 		programBlockPointer = programBlockPointer + 2
 		semanticStack.append('@' + str(temp1))
-		# print semanticStack[-1]
+	
 	elif nonTerminal == 'p' :
 		tempAddr1 = getTemp()
 		tempAddr2 = getTemp()
 		gett2 = getTemp()
-		# print "The semantic stack is at: " + str(semanticStack)
 		pointer = semanticStack[-3]
-		# print pointer
-		# print "The semantic stack is at: " + str(semanticStack)
 		temp = semanticStack.pop()
-		# print "The semantic stack is at: " + str(semanticStack)
 		semanticStack.pop()
-		# print temp
-		# 
-		# print "The semantic stack is at: " + str(semanticStack)
-		# if (not isinstance(temp, int)) :
-		# 	if ('#' in temp) :
-		# 		temp = temp.replace("#", "")
-		# programBlock.pop()
-		with open('program.txt', 'w') as program :
-			for item in programBlock:
-  				print>>program, item
-  		# print pointer
 		wrongAddresses = programBlock[pointer]
-		# print wrongAddresses
 		wrongAddresses[1] = wrongAddresses[1].replace('#','')
-		# programBlock.pop()
-		# print "The semantic stack is at: " + str(semanticStack)
-		# programBlock.append(['ASSIGN',wrongAddresses[2],tempAddr1,''])
-		programBlock.append(['ADD',500,wrongAddresses[2],tempAddr1])
+		programBlock[pointer + 1] = ['ADD',500,wrongAddresses[2],tempAddr1]
 		programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
 		semanticStack.append('@' + str(tempAddr2))
-		# programBlock.append(['ASSIGN','@'+str(semanticStack[-1]),tempAddr1,''])
-		programBlockPointer = programBlockPointer + 2
+		programBlockPointer = programBlockPointer + 1
+	
 	elif nonTerminal == 's' :
 		temp = getTemp()
 		firstOperand = semanticStack.pop()
@@ -565,29 +561,81 @@ def codeGen(nonTerminal, token):
 		programBlock.append(['EQ',firstOperand,secondOperand,temp] if (operation == 'equal') else (['LT',secondOperand,firstOperand,temp] if operation == 'less' else '')) # TODO:Addressing!!!!!!!!
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.append(temp)
+	
 	elif nonTerminal == 't' :
 		semanticStack.append('less')
+	
 	elif nonTerminal == 'u' :
 		semanticStack.append('equal')
+	
 	elif nonTerminal == 'x1' :
 		temp = getTemp()
 		firstOperand = semanticStack.pop()
 		operation = semanticStack.pop()
 		secondOperand = semanticStack.pop()
-		programBlock.append(['ADD',firstOperand,secondOperand,temp] if operation == 'add' else (['SUB',firstOperand,secondOperand,temp] if operation == 'sub' else '')) # TODO:Addressing!!!!!!!!
+		programBlock.append(['ADD',firstOperand,secondOperand,temp] if operation == 'add' else (['SUB',secondOperand,firstOperand,temp] if operation == 'sub' else '')) # TODO:Addressing!!!!!!!!
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.append(temp)
+	
 	elif nonTerminal == 'w1' :
 		semanticStack.append('add')
+	
 	elif nonTerminal == 'x2' :
 		semanticStack.append('sub')
-	# elif nonTerminal == 'x3' :
-	elif nonTerminal == 'x4' :
-		# print token[1] + " This is the token which is going to be pushed inside of the semantic stack!"
-		semanticStack.append('#' + str(token[1]))
-		# print "The semantic stack is at: " + str(semanticStack)
+	
 	# elif nonTerminal == 'x5' :
-	# elif nonTerminal == 'x6' :
+	
+	elif nonTerminal == 'x6' :
+		temporary = getTemp()
+		argsList = []
+		while not semanticStack[-1] == '(' :
+			argsList.append(semanticStack.pop())
+		semanticStack.pop()
+		
+		if semanticStack[-1] == 'output' :
+			programBlock.append(['PRINT',argsList[0],'',''])
+			programBlockPointer = programBlockPointer + 1
+			return 0
+		else :
+			funcID = semanticStack[-1]
+			print functions[funcID]
+			if (not len(argsList) == len(functions[funcID])):
+				print "Parameter count does not match!" + str(argsList)
+		
+		programBlock.append(['ASSIGN',500,199,''])
+		programBlockPointer = programBlockPointer + 1
+		
+		programBlock.append(['ADD',500,'#1804',temporary])
+		programBlockPointer = programBlockPointer + 1
+		programBlock.append(['ASSIGN',temporary,500,''])
+		# programBlock.append(['PRINT',500,'',''])
+		programBlockPointer = programBlockPointer + 1
+		
+		for iterator in range(len(argsList)) :
+			if (not argsList[2] == 'arr') :
+				programBlock.append(['ASSIGN',argsList[iterator],'@500',''])
+				programBlockPointer = programBlockPointer + 1
+				programBlock.append(['ADD',500,'#4',temporary])
+				programBlock.append(['ASSIGN',temporary,500,''])
+				programBlockPointer = programBlockPointer + 2
+			else :
+				programBlock.append(['ASSIGN',argsList[iterator].replace('@',''),'@500',])
+				programBlockPointer = programBlockPointer + 1
+				programBlock.append(['ADD',500,'#4',temporary])
+				programBlock.append(['ASSIGN',temporary,500,''])
+				programBlockPointer = programBlockPointer + 2
+
+		programBlock.append(['ASSIGN','#' + str(programBlockPointer + 4),'@500',''])
+		programBlockPointer = programBlockPointer + 1
+		programBlock.append(['ADD',500,'#4',temporary])
+		programBlock.append(['ASSIGN',temporary,500,''])
+		programBlockPointer = programBlockPointer + 2
+
+		jumpAddress = functions[funcID][1]
+
+		programBlock.append(['JP',jumpAddress,'',''])
+		programBlockPointer = programBlockPointer + 1
+	
 	elif nonTerminal == 'x7' :
 		temp = getTemp()
 		firstOperand = semanticStack.pop()
@@ -595,14 +643,35 @@ def codeGen(nonTerminal, token):
 		programBlock.append(['MULT',firstOperand,secondOperand,temp]) # TODO:Addressing!!!!!!!!
 		programBlockPointer = programBlockPointer + 1
 		semanticStack.append(temp)
-	# elif nonTerminal == 'x8' :
-	# 	# localAddressBase = 100
-	# 	# tempAddressBase = 500
-	# 	# arrayAddressBase = 1000
+	
+	elif nonTerminal == 'x8' :
+		temporary = getTemp()
+		if (not lastFunc == 'main') :
+			programBlock.append(['SUB',500,'#4',temporary])
+			programBlockPointer = programBlockPointer + 1
+			
+			programBlock.append(['ASSIGN',199,500,''])
+			programBlockPointer = programBlockPointer + 1
+
+			programBlock.append(['JP',92,'',''])
+			programBlockPointer = programBlockPointer + 1
+	
+	elif nonTerminal == 'x9' :
+		semanticStack.append(token[1])
+		semanticStack.append('(')
+
 	elif nonTerminal == 'V' :
-		# print semanticStack
 		semanticStack.pop(-2)
-		# print semanticStack
+
+	elif nonTerminal == 'x3' :
+		i = (findVar(token[1], currentBlockNode))[1][0]
+		arrAddress = (findVar(token[1], currentBlockNode))[1][1]
+		programBlock.append(['ASSIGN','#' + str(arrAddress),i,''])
+		programBlockPointer =  programBlockPointer + 1
+
+	elif nonTerminal == 'x4' :
+		semanticStack.append('#' + str(token[1]))
+
 
 
 

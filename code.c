@@ -8,31 +8,34 @@ int a[10];
 	a = 12;
 }*/
 
-/*int function2(void) {
+void function2(int o, int w, int d) {
+	int x;
+	int b[3];
 	int a;
-	int b[23];
 	a = 0;
-	while(a<23){
-		b[a] = 23 - a;
+	while(a<3){
+		b[a] = 3 - a;
 		a = a + 1;
 	}
-	a = 25;
-}*/
-
-int fun(int x[], int y, int z[]){
-	int a;
-	int b[10];
-	return 0;
+	x = 0;
+	while(x<3) {
+		output(b[x]);
+		x = x+1;
+	}
 }
         
 void main(void){/**/
-	int a[2];
+	int vo;
+	int c;
+	int a;
 	int x[10];
-	x[2] = 3;
-	a[1] = 0;
-	a[0] = 1;
-	x[a[0] + a[1]] = x[2];
-
+	int u[19];
+	a = 3; /**/
+	x[2] = 1 * -2 + (1+2);
+	output(x[2]);
+	vo = 6;
+	function2(a,x[2],vo);
+	output(vo);
 	/*x[4] = 12;*/
 
 	/*if(a<2)

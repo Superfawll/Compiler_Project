@@ -4,7 +4,7 @@ B	G
 G	C
 G	F
 C	Ei;
-C	Ei[n];
+C	Ei[n];x3
 E	g
 E	v
 F	Ei(aT)Hx8
@@ -46,9 +46,9 @@ X	X*Zx7
 X	Z
 Z	(P)
 Z	V
-Z	Sx3
+Z	S
 Z	nx4
-S	ir1(yx6)x5
+S	i(x9yx6)x5
 y	x
 y	
 x	x,P
@@ -58,14 +58,14 @@ b
 c	
 j	
 h	
-d		
+d	
 l	
 m	
 o	
 p	
 r1	
 s	
-w2		
+w2	
 u	
 w1	
 t	
@@ -77,4 +77,5 @@ x3
 k	
 x6	
 x7	
-x8	 
+x8	
+x9	 

@@ -215,10 +215,12 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 							parsingStack = ['0']
 					parsingStack.append(r[0])
 					parsingStack.append(gotoTable[r[0]][parsingStack[-2]])
-					# if (r[0] == 'a') :
-					# 	utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 2])
-					# else  :
-					# 	utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 1])
+					if (r[0] == 'a' or r[0] == 'x9') :
+						utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 2])
+					elif (r[0] == 'x3')  :
+						utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 5])
+					else :
+						utilities.codeGen(r[0], utilities.tokens[utilities.tokenIterator - 1])
 					# print "Reduce operation done with rule: " + str(int(action[1:])) + " !"
 			
 			elif utilities.tokenNum > 1 :	
@@ -245,9 +247,9 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 
 				continue
 			
-utilities.root.printSubTree(0)
-print "\n\n"
-print utilities.functions
+# utilities.root.printSubTree(0)
+# print "\n\n"
+# print utilities.functions
 
 # utilities.root.printSubTree(0)
 # print utilities.functions
@@ -256,9 +258,23 @@ print utilities.functions
 
 # print utilities.functions
 
-with open('program.txt', 'w') as program :
-	for item in utilities.programBlock:
+string = []
+
+for i in range (0,len(utilities.programBlock)) :
+	s = '(' + str(utilities.programBlock[i][0]) + ',' + str(utilities.programBlock[i][1]) + ',' +str(utilities.programBlock[i][2]) + ',' +str(utilities.programBlock[i][3]) + ')'
+	string.append(s)
+
+with open('output.txt', 'w') as program :
+	for item in string:
   		print>>program, item
+
+# with open('output.txt', 'w') as program :
+# 	for item in utilities.programBlock:
+#   		print>>program, item
+
+# with open('program.txt', 'w') as program :
+# 	for item in utilities.programBlock:
+#   		print>>program, item
 
 # print "\n"
 # print str(utilities.tokens) + "\nThis is the understood language flow of the program!"
