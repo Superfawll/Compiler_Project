@@ -8,27 +8,21 @@ int a[10];*/
 	a = 12;
 }*/
 
-void function2(int o, int w, int d) {
+/*void function2(int o, int w, int d) {
 	int x;
 	int b[3];
-	int g[2];
-	int l;
-	int h[2];
 	int a;
 	a = 0;
-
-	output(o);
-	
 	while(a<3){
 		b[a] = 3 - a;
 		a = a + 1;
 	}
 	x = 0;
-	/*while(x<3) {
+	while(x<3) {
 		output(b[x]);
 		x = x+1;
-	}*/
-}
+	}
+}*/
 
 /*int f(void){
 	int a;
@@ -61,19 +55,19 @@ void function2(int o, int w, int d) {
 }*/
         
 void main(void){/**/
-	int vo;
+/*	int vo;
 	int c;
 	int a;
-	int x[3];
-	/*int u[19];*/
-	a = 2;
-	x[a] = 1 * -2 + (1+2);
-	/*output(x[2]);*/
+	int x[10];
+	int u[19];
+	a = 3;
+	x[2] = 1 * -2 + (1+2);
+	output(x[2]);
 	vo = 6;
-	function2(a,c,vo);
-	output(vo);
+	function2(a,x[2],vo);
+	output(vo);*/
 	/*x[4] = 12;*/
-	/*int a;
+	int a;
 	int c;
 
 
@@ -88,7 +82,7 @@ void main(void){/**/
 			b= -1;
 			c = c - 1;
 		}
-	} */
+	} 
 	
 }EOF /*ew;fm*//**/
 	/**/ /*anfre*/

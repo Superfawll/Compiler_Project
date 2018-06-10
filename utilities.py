@@ -726,7 +726,13 @@ def codeGen(nonTerminal, token):
 			programBlockPointer = programBlockPointer + 1
 			localAddress = localAddress + 4
 
+		programBlock.append(['ASSIGN',"#0", stackPointer,''])
+		programBlockPointer = programBlockPointer + 1
+
 		programBlock.append(['ASSIGN','@' + str(baseStackPointer), str(accessLink),''])
+		programBlockPointer = programBlockPointer + 1
+
+		programBlock.append(['ADD',baseStackPointer,'#' + str(1503),baseStackPointer])
 		programBlockPointer = programBlockPointer + 1
 
 		programBlock.append(['ASSIGN','#' + str(programBlockPointer + 2), str(controlLink),''])
@@ -746,18 +752,68 @@ def codeGen(nonTerminal, token):
 		semanticStack.append(temp)
 	
 	elif nonTerminal == 'x8' :
-		temporary = getTemp()
-		print lastFunc
-		if (not lastFunc == 'main') :
-			programBlock.append(['SUB',500,'#4',temporary])
-			programBlockPointer = programBlockPointer + 1
+		# temporary = getTemp()
+		# # print lastFunc
+		# if (not lastFunc == 'main') :
+		# 	programBlock.append(['SUB',500,'#4',temporary])
+		# 	programBlockPointer = programBlockPointer + 1
 			
-			programBlock.append(['ASSIGN',199,500,''])
-			programBlockPointer = programBlockPointer + 1
+		# 	programBlock.append(['ASSIGN',199,500,''])
+		# 	programBlockPointer = programBlockPointer + 1
 
-			programBlock.append(['JP',92,'',''])
+		# 	programBlock.append(['JP',92,'',''])
+		# 	programBlockPointer = programBlockPointer + 1
+
+		programBlock.append(['SUB',baseStackPointer,'#' + str(1500),baseStackPointer])
+		programBlockPointer = programBlockPointer + 1
+
+		iterator = LOCALBASE
+
+		while iterator < relAddress :
+			# if (not argsList[2] == 'arr') :
+			programBlock.append(['ASSIGN','@' + str(stackPointer),iterator,''])
 			programBlockPointer = programBlockPointer + 1
-	
+			programBlock.append(['ADD',stackPointer,'#4',stackPointer])
+			# programBlock.append(['ASSIGN',temporary,500,''])
+			programBlockPointer = programBlockPointer + 1
+			iterator = iterator + 4
+
+		programBlock.append(['ASSIGN',stackPointer,baseStackPointer,''])
+		programBlock.append(['ADD',stackPointer,'#' + str(ARRAYBASE),stackPointer])
+		programBlockPointer = programBlockPointer + 2
+		
+		iterator = ARRAYBASE		
+		
+		while iterator < relArrAddress :
+			# if (not argsList[2] == 'arr') :
+			programBlock.append(['ASSIGN','@' + str(stackPointer),iterator,''])
+			programBlockPointer = programBlockPointer + 1
+			programBlock.append(['ADD',stackPointer,'#4',stackPointer])
+			# programBlock.append(['ASSIGN',temporary,500,''])
+			programBlockPointer = programBlockPointer + 1
+			iterator = iterator + 4
+
+		programBlock.append(['ASSIGN',baseStackPointer,stackPointer,''])
+		programBlock.append(['ADD',stackPointer,'#' + str(TEMPBASE),stackPointer])
+		programBlockPointer = programBlockPointer + 2
+
+		iterator = TEMPBASE		
+		
+		while iterator < tempAddress :
+			# if (not argsList[2] == 'arr') :
+			programBlock.append(['ASSIGN','@' + str(stackPointer),iterator,''])
+			programBlockPointer = programBlockPointer + 1
+			programBlock.append(['ADD',stackPointer,'#4',stackPointer])
+			# programBlock.append(['ASSIGN',temporary,500,''])
+			programBlockPointer = programBlockPointer + 1
+			iterator = iterator + 4
+
+		programBlock.append(['SUB',baseStackPointer,'#3',baseStackPointer])
+		programBlockPointer = programBlockPointer + 1
+
+		programBlock.append(['JP','@' + str(baseStackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
+
 	elif nonTerminal == 'x9' :
 		semanticStack.append(token[1])
 		semanticStack.append('(')
