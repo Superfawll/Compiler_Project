@@ -685,22 +685,30 @@ def codeGen(nonTerminal, token):
 		temp = semanticStack.pop()
 		address = semanticStack.pop()
 
-		# if currentBlockNode.name != 'main' :
-		# 	# print str(functions[currentBlockNode.name][2].keys()) + "Hoooooooyyyy"
-		# 	# print currentBlockNode.name
+		if currentBlockNode.name != 'main' :
+			# print str(functions[currentBlockNode.name][2].keys()) + "Hoooooooyyyy"
+			# print currentBlockNode.name
 
-		# 	for i in functions[currentBlockNode.name][2].keys() :
-		# 		if  address == str(functions[currentBlockNode.name][2][i][0]):
-		# 			# print "MAAAAAAAAAAAAAANN"
-		# 			addCode(['ADD',accessLink,address,tempAddr1])
-		# 			addCode(['ADD',str(temp),tempAddr1,tempAddr1])
-		# 			semanticStack.append('@' + str(tempAddr1))
+			for i in functions[currentBlockNode.name][2].keys() :
+				if  address == str(functions[currentBlockNode.name][2][i][0]):
+					# print "MAAAAAAAAAAAAAANN"
+					addCode(['ADD',accessLink,address,tempAddr1])
+					addCode(['ADD',str(temp),tempAddr1,tempAddr1])
+					semanticStack.append('@' + str(tempAddr1))
 
-		if (currentBlockNode.name == ''):
-			addCode(['ADD','#5012',address,tempAddr1])
-			addCode(['ADD',str(temp),tempAddr1,tempAddr1])
-			# programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
-			semanticStack.append('@' + str(tempAddr1))
+				elif (currentBlockNode.name == ''):
+					addCode(['ADD','#5012',address,tempAddr1])
+					addCode(['ADD',str(temp),tempAddr1,tempAddr1])
+					# programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
+					semanticStack.append('@' + str(tempAddr1))
+				else :
+					# wrongAddresses = programBlock[pointer]
+					# wrongAddresses[1] = wrongAddresses[1].replace('#','')
+					addCode(['ADD',str(temp),address,tempAddr1])
+					# programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
+					semanticStack.append('@' + str(tempAddr1))
+					# print semanticStack
+
 		else :
 			# wrongAddresses = programBlock[pointer]
 			# wrongAddresses[1] = wrongAddresses[1].replace('#','')
@@ -708,6 +716,7 @@ def codeGen(nonTerminal, token):
 			# programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
 			semanticStack.append('@' + str(tempAddr1))
 			# print semanticStack
+
 	
 	elif nonTerminal == 's' :
 		print "we are at " + nonTerminal
