@@ -71,7 +71,7 @@ with open("reductions.txt", "w") as reductionSequenceFile :
 					if not utilities.matchToken("Keyword") :
 						if not utilities.matchToken("ID") :
 							if not utilities.matchToken("NUM") :
-								print "ERROR, String \'{}\' does not match any patterns!".format(utilities.sKey)
+								print "ERROR, String \'{}\' does not match any patterns!".format(utilities.badString)
 								quit()
 
 			else :

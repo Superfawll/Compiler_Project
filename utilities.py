@@ -1,12 +1,14 @@
 ﻿import re
 
 ID = r"([A-Za-z]([A-Za-z]|[0-9])*)"
-NUM = r"((\+|-)?([0-9])+)"
+# DEBUGGED
+NUM = r"((\+|-)?([0-9])+(?!([A-Za-z]|[0-9])))"
+# DEBUGGED
 keyword1 = r"(EOF|int|void|if|else|while|return)"
 keyword2 = r"(;|\[|\]|\(|\)|\{|\}|,|=(?!=)|<|==|\+|\*|-)"
 nonTerminals = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','x','t','u','s','w1','y','c','d','h','x2','x4','x7','x5','x6','k','x9','o','m','r1','p','w2','j','b','a','x3','x1','x8','l']
 terminals = ['(',')','*','+',',','-',';','<','=','[',']','e','f','g','i','n','q','r','v','w','z','{','}','$']
-sKey = ""
+badString = ""
 
 contiguousSubString = ""
 tokens = []
@@ -138,7 +140,7 @@ def matchToken(candid):
 	global isNum
 	global lastFunc
 	global tokenSemaphore
-	global sKey
+	global badString
 
 	if (contiguousSubString[0] == '+' or contiguousSubString[0] == '-') and candid == "Keyword" :
 		if (tokens[-1][0] in numSignIndicator and tokens[-1][0] != ')') :
@@ -173,6 +175,7 @@ def matchToken(candid):
 				tokenSemaphore = 1
 			return True
 		else :
+			badString = contiguousSubString
 			return False
 
 	if candid == "ID" or candid == "NUM" :
@@ -183,6 +186,7 @@ def matchToken(candid):
 		matched = re.match(pattern, contiguousSubString)
 		if matched :
 			matched = matched.group()
+			# print matched + " --> " + candid
 			tag = "i" if candid == "ID" else "n"
 			tokens.append((tag, matched))
 			tokenNum = tokenNum + 1
@@ -190,6 +194,7 @@ def matchToken(candid):
 			contiguousSubString = re.sub(pattern, "", contiguousSubString)
 			return True
 		else :
+			badString = contiguousSubString
 			return False
 
 
@@ -775,10 +780,13 @@ def codeGen(nonTerminal, token):
 			# print argsList
 			# print "***"
 			# print functions[funcID]
+
+			# DEBUGGED
 			l1 = len(argsList)
 			l2 = 0 if len(functions[funcID]) == 2 else len(functions[funcID][2])
 			if l1 != l2:
 				print "Too " + ("Many" if l1 > l2 else "Few") + " Arguments To Call Function \'{}\':".format(funcID) + str(argsList) #TODO: Check parameter types
+			# DEBUGGED
 
 		# programBlock.append(['PRINT',baseStackPointer,'',''])
 		# programBlockPointer = programBlockPointer + 1
