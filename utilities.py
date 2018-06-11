@@ -255,8 +255,10 @@ def getActionTable(file):
 
 def getFollowSet(file):
   followSet = {}
-  f = {"A": "$", "B": "vgz", "C": "rvfgw(iz{;}n", "D": "rfvwg(i{;}n", "E": "i", "F": "vgz", "G": "vgz", "H": "efg(inrvwz{;}", "I": "),", "J": "rfw(i{;}n", "K": "refw(i{;}n", "L": "refw(i{;}n", "M": "refw(i{;}n", "N": ");,]", "O": "q);+<,-]", "P": ");,]", "Q": "refw(i{;}n", "R": "refw(i{;}n", "S": "q)*;+<,-]", "T": ")", "U": "),", "V": "q)*;+<,=-]", "W": "(in", "X": "q)*;+<,-]", "Y": "(in", "Z": "q)*;+<,-]", "À": "),", "Â": "(in", "Ã": "(in", "Å": ");,]", "Æ": "(in", "È": ")", "É": "refw(i{;}n", "Ê": "e", "Ë": ")", "Ì": "(in", "Í": "q)*;+<,-]", "Î": "q)*;+<,-]", "Ï": "q)*;+<,-]", "Õ": ")", "Ö": "refw(i{;}n", "Ø": "(i)n", "Ù": ")", "Ú": "refw(i{;}n", "Û": "q)*[;+<,=-]", "Ü": "]", "Ā": ");,]", "Ē": "(in", "Ė": "refw(i{;}n", "Ę": "vg", "Ī": "rvfgw(iz{;}n", "Į": "q);+<,-]", "Œ": "vgz", "Ū": "refw(i{;}n"}
-  m = {"a"  : "Ę", "b"  : "Ė", "c"  : "É", "d"  : "Ê", "h"  : "Ë", "j"  : "Ē", "k"  : "Ö", "l"  : "Ū", "m"  : "Ú", "o"  : "Ù", "p"  : "Ü", "r1" : "Û", "s"  : "Å", "t"  : "Â", "u"  : "Ã", "w1" : "Æ", "w2" : "Ā", "x1" : "Į", "x2" : "Ì", "x3" : "Ī", "x4" : "Í", "x5" : "Ï", "x6" : "Õ", "x7" : "Î", "x"  : "À", "y"  : "È"}
+  #DEBUGGED
+  f = ["A": "$", "B": "vgz", "C": "rvfgw(iz{;}n", "D": "rfvwg(i{;}n", "E": "i", "F": "vgz", "G": "vgz", "H": "efg(inrvwz{;}", "I": "),", "J": "rfw(i{;}n", "K": "refw(i{;}n", "L": "refw(i{;}n", "M": "refw(i{;}n", "N": ");,]", "O": "q);+<,-]", "P": ");,]", "Q": "refw(i{;}n", "R": "refw(i{;}n", "S": "q)*;+<,-]", "T": ")", "U": "),", "V": "q)*;+<,=-]", "W": "(in", "X": "q)*;+<,-]", "Y": "(in", "Z": "q)*;+<,-]", "À": "),", "Â": "(in", "Ã": "(in", "Å": ");,]", "Æ": "(in", "È": ")", "É": "refw(i{;}n", "Ê": "e", "Ë": ")", "Ì": "(in", "Í": "q)*;+<,-]", "Î": "q)*;+<,-]", "Ï": "q)*;+<,-]", "Õ": ")", "Ö": "refw(i{;}n", "Ø": "(i)n", "Ù": ")", "Ú": "refw(i{;}n", "Û": "q)*[;+<,=-]", "Ü": "]", "Ā": ");,]", "Ē": "(in", "Ė": "refw(i{;}n", "Ę": "vg", "Ī": "rvfgw(iz{;}n", "Į": "q);+<,-]", "Œ": "vgz", "Ū": "refw(i{;}n"]
+  m = ["a"  : "Ę", "b"  : "Ė", "c"  : "É", "d"  : "Ê", "h"  : "Ë", "j"  : "Ē", "k"  : "Ö", "l"  : "Ū", "m"  : "Ú", "o"  : "Ù", "p"  : "Ü", "r1" : "Û", "s"  : "Å", "t"  : "Â", "u"  : "Ã", "w1" : "Æ", "w2" : "Ā", "x1" : "Į", "x2" : "Ì", "x3" : "Ī", "x4" : "Í", "x5" : "Ï", "x6" : "Õ", "x7" : "Î", "x9" : "Ø", "x8" : "Œ", "x"  : "À", "y"  : "È"]
+  #DEBUGGED
   for k in sorted(f.keys()):
     m[k] = k
     if k == "Z":
@@ -305,10 +307,10 @@ def scopeChecking(t):
 		if t == "(":
 			# Checking whether main is the last function declaration or not!
 			if "main" in functions.keys() and lastSymbol != "main":
-				return "\'{}\'' Is Defined After \'main\'".format(lastSymbol)
+				return "\'{}\' Is Defined After \'main\'".format(lastSymbol)
 			# Checking whether the function defined has a duplicate name as another function or not!
 			if lastSymbol in functions.keys():
-				return "Duplicate Function Definition: \'{}\'' Already Exists!".format(lastSymbol)
+				return "Duplicate Function Definition: \'{}\' Already Exists!".format(lastSymbol)
 			else:
 				functions[lastSymbol] = [lastType, -1]
 			# Inserting the new identifier inside of the symbol table linked-list
@@ -426,7 +428,7 @@ def addVars(t):
 			isArray = True
 		elif t == ";" or t == ")" or t == ",":
 			if currentBlockNode.duplicate(lastSymbol):
-				return "Duplicate Variable Definition: \'{}\'' Already Exists In This Scope!".format(lastSymbol)
+				return "Duplicate Variable Definition: \'{}\' Already Exists In This Scope!".format(lastSymbol)
 			if lastType == "void":
 				return "Variable \'{}\' Can Not Be Defined Of Type \'void\'".format(lastSymbol)
 
