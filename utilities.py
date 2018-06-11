@@ -522,6 +522,66 @@ def codeGen(nonTerminal, token):
 		elif token[1] == 'main' :
 			pointer = semanticStack.pop()
 			programBlock[pointer] = ['JP',programBlockPointer,'','']
+			iterator = LOCALBASE
+
+			while iterator < relAddress :
+				# programBlock.append(['PRINT',stackPointer,'',''])
+				# programBlockPointer = programBlockPointer + 1
+				# if (not argsList[2] == 'arr') :
+				programBlock.append(['ASSIGN',iterator,'@' + str(stackPointer),''])
+				programBlockPointer = programBlockPointer + 1
+				programBlock.append(['ADD',stackPointer,'#4',stackPointer])
+				# programBlock.append(['ASSIGN',temporary,500,''])
+				programBlockPointer = programBlockPointer + 1
+				iterator = iterator + 4
+
+			programBlock.append(['ASSIGN',baseStackPointer,stackPointer,''])
+			programBlock.append(['ADD',stackPointer,'#' + str(ARRAYBASE),stackPointer])
+			programBlock.append(['ADD',stackPointer,'#12',stackPointer])
+			programBlockPointer = programBlockPointer + 3
+			
+			iterator = ARRAYBASE		
+
+			print relArrAddress
+			
+			while iterator < relArrAddress :
+				# if (not argsList[2] == 'arr') :
+				programBlock.append(['ASSIGN',iterator,'@' + str(stackPointer),''])
+				programBlockPointer = programBlockPointer + 1
+				programBlock.append(['ADD',stackPointer,'#4',stackPointer])
+				# programBlock.append(['ASSIGN',temporary,500,''])
+				programBlockPointer = programBlockPointer + 1
+				iterator = iterator + 4
+
+			programBlock.append(['ASSIGN',baseStackPointer,stackPointer,''])
+			programBlock.append(['ADD',stackPointer,'#' + str(TEMPBASE),stackPointer])
+			programBlock.append(['ADD',stackPointer,'#12',stackPointer])
+			programBlockPointer = programBlockPointer + 3
+
+			iterator = TEMPBASE		
+			
+			while iterator < tempAddress - 4:
+				# programBlock.append(['PRINT',stackPointer,'',''])
+				# programBlockPointer = programBlockPointer + 1
+				# if (not argsList[2] == 'arr') :
+				programBlock.append(['ASSIGN',iterator,'@' + str(stackPointer),''])
+				programBlockPointer = programBlockPointer + 1
+				programBlock.append(['ADD',stackPointer,'#4',stackPointer])
+				# programBlock.append(['ASSIGN',temporary,500,''])
+				programBlockPointer = programBlockPointer + 1
+				iterator = iterator + 4
+			programBlock.append(['ASSIGN',baseStackPointer,stackPointer,''])
+			programBlockPointer = programBlockPointer + 1
+
+			programBlock.append(['ADD',stackPointer,'#' + str(1512),stackPointer])
+			programBlockPointer = programBlockPointer + 1
+
+			# programBlock.append(['ASSIGN','@' + str(baseStackPointer), str(accessLink),''])
+			# programBlockPointer = programBlockPointer + 1
+
+			programBlock.append(['ADD',baseStackPointer,'#' + str(1512),baseStackPointer])
+			programBlockPointer = programBlockPointer + 1
+
 		functions[token[1]][1] = programBlockPointer
 		# print functions[token[1]]
 	
@@ -621,13 +681,22 @@ def codeGen(nonTerminal, token):
 		# pointer = semanticStack[-3]
 		temp = semanticStack.pop()
 		address = semanticStack.pop()
-		# wrongAddresses = programBlock[pointer]
-		# wrongAddresses[1] = wrongAddresses[1].replace('#','')
-		programBlock.append(['ADD',str(temp),address,tempAddr1])
-		# programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
-		semanticStack.append('@' + str(tempAddr1))
-		programBlockPointer = programBlockPointer + 1
-		# print semanticStack
+		if (currentBlockNode.name == ''):
+			programBlock.append(['ADD','#5012',address,tempAddr1])
+			# programBlock.append(['ADD',temp,500,temp1])
+			programBlockPointer = programBlockPointer + 1
+			programBlock.append(['ADD',str(temp),tempAddr1,tempAddr1])
+			# programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
+			semanticStack.append('@' + str(tempAddr1))
+			programBlockPointer = programBlockPointer + 1
+		else :
+			# wrongAddresses = programBlock[pointer]
+			# wrongAddresses[1] = wrongAddresses[1].replace('#','')
+			programBlock.append(['ADD',str(temp),address,tempAddr1])
+			# programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
+			semanticStack.append('@' + str(tempAddr1))
+			programBlockPointer = programBlockPointer + 1
+			# print semanticStack
 	
 	elif nonTerminal == 's' :
 		print "we are at " + nonTerminal
@@ -832,7 +901,7 @@ def codeGen(nonTerminal, token):
 		programBlock.append(['ASSIGN','@' + str(baseStackPointer),t,''])
 		programBlockPointer =  programBlockPointer + 1
 
-		programBlock.append(['PRINT',t,'',''])
+		# programBlock.append(['PRINT',t,'',''])
 		programBlockPointer = programBlockPointer + 1
 
 		programBlock.append(['JP','@' + str(t),'',''])
