@@ -7,8 +7,9 @@
 void func(int b) {
 	int x[2];
 	int a;
-	a = 12;
-	output(a);
+	b[1] = 12;
+	output(x[1]);
+	return;
 }
 
 

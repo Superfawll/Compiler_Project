@@ -439,7 +439,9 @@ def addVars(t):
 			# print relAddress
 			state2 = 0
 			if t == ")":
+				print "heyyyyyyyyy!"
 				functions[currentBlockNode.name].append(currentBlockNode.symbolTable.copy())
+				print functions[currentBlockNode.name]
 		else:
 			state2 = -1
 
@@ -546,6 +548,7 @@ def codeGen(nonTerminal, token):
 			isFirstFunc = True
 		elif token[1] == 'main' :
 			pointer = semanticStack.pop()
+			print pointer
 			programBlock[pointer] = ['JP',programBlockPointer,'','']
 
 			copyCode1(LOCALBASE, relAddress)
@@ -617,12 +620,23 @@ def codeGen(nonTerminal, token):
 	
 	elif nonTerminal == 'k' :
 		print "we are at " + nonTerminal
-		semanticStack.append(programBlockPointer)
-	
+		
+		t = getTemp()
+
+		programBlock.append(['SUB',baseStackPointer,'#1512',baseStackPointer])
+		programBlockPointer = programBlockPointer + 1
+
+		programBlock.append(['ASSIGN','@' + str(baseStackPointer),t,''])
+		programBlockPointer =  programBlockPointer + 1
+
+		programBlock.append(['JP','@' + str(t),'',''])
+		programBlockPointer = programBlockPointer + 1
+
 	elif nonTerminal == 'm' :
 		print "we are at " + nonTerminal
 		# Return address of the function is pushed at the begining, so just assigning the return value to the return address!
 		addCode(['ASSIGN',semanticStack[-1],str(returnAddress),''])
+		t = getTemp()
 		# programBlock.append(['ADD',stackPointer,'#4',stackPointer])
 		# # programBlock.append(['ASSIGN',temporary,500,''])
 		# programBlockPointer = programBlockPointer + 1
@@ -670,6 +684,18 @@ def codeGen(nonTerminal, token):
 		# pointer = semanticStack[-3]
 		temp = semanticStack.pop()
 		address = semanticStack.pop()
+
+		# if currentBlockNode.name != 'main' :
+		# 	# print str(functions[currentBlockNode.name][2].keys()) + "Hoooooooyyyy"
+		# 	# print currentBlockNode.name
+
+		# 	for i in functions[currentBlockNode.name][2].keys() :
+		# 		if  address == str(functions[currentBlockNode.name][2][i][0]):
+		# 			# print "MAAAAAAAAAAAAAANN"
+		# 			addCode(['ADD',accessLink,address,tempAddr1])
+		# 			addCode(['ADD',str(temp),tempAddr1,tempAddr1])
+		# 			semanticStack.append('@' + str(tempAddr1))
+
 		if (currentBlockNode.name == ''):
 			addCode(['ADD','#5012',address,tempAddr1])
 			addCode(['ADD',str(temp),tempAddr1,tempAddr1])
