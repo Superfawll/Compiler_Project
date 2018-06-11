@@ -791,6 +791,7 @@ def codeGen(nonTerminal, token):
 			l2 = 0 if len(functions[funcID]) == 2 else len(functions[funcID][2])
 			if l1 != l2:
 				print "Too " + ("Many" if l1 > l2 else "Few") + " Arguments To Call Function \'{}\':".format(funcID) + str(argsList) #TODO: Check parameter types
+				quit()
 			# DEBUGGED
 
 		# programBlock.append(['PRINT',baseStackPointer,'',''])
