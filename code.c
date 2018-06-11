@@ -4,9 +4,8 @@
 	else {return fibbo(a - 1) + fibbo(a - 2);}
 }*/
 
-int v[2];
-
-void func(void) {
+void func(int b) {
+	int x[2];
 	int a;
 	a = 12;
 	output(a);
@@ -14,9 +13,10 @@ void func(void) {
 
 
 void main (void) {
+	int v[2];
 	v[1] = 12;
 
 	output(v[1]);
 	
-	func();
+	func(v[1]);
 }EOF
