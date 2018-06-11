@@ -4,7 +4,9 @@
 	else {return fibbo(a - 1) + fibbo(a - 2);}
 }*/
 
-int func(int b[], int c[]){
+int a
+
+int func(int b[]){
 	int x[11];
 	int a;
 	output(b[1]);
