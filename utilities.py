@@ -508,6 +508,8 @@ def codeGen(nonTerminal, token):
 
 	# print str(semanticStack) + str(nonTerminal) 
 	# print programBlock
+	print semanticStack
+
 
 	if nonTerminal == 'a' :
 		print "we are at " + nonTerminal
@@ -580,11 +582,14 @@ def codeGen(nonTerminal, token):
 	elif nonTerminal == 'm' :
 		print "we are at " + nonTerminal
 		# Return address of the function is pushed at the begining, so just assigning the return value to the return address!
-		# programBlock.append(['ASSIGN',semanticStack[-1],semanticStack[-2],''])
+		programBlock.append(['ASSIGN',semanticStack[-1],str(returnAddress),''])
 		programBlockPointer = programBlockPointer + 1
+		# programBlock.append(['ADD',stackPointer,'#4',stackPointer])
+		# # programBlock.append(['ASSIGN',temporary,500,''])
+		# programBlockPointer = programBlockPointer + 1
+		# semanticStack.append(returnAddress)
+		# semanticStack.append(returnAddress)
 		semanticStack.pop()
-		semanticStack.pop()
-		semanticStack.append(programBlockPointer)
 	
 	elif nonTerminal == 'w2' :
 		print "we are at " + nonTerminal
@@ -827,6 +832,9 @@ def codeGen(nonTerminal, token):
 		programBlock.append(['ASSIGN','@' + str(baseStackPointer),t,''])
 		programBlockPointer =  programBlockPointer + 1
 
+		programBlock.append(['PRINT',t,'',''])
+		programBlockPointer = programBlockPointer + 1
+
 		programBlock.append(['JP','@' + str(t),'',''])
 		programBlockPointer = programBlockPointer + 1
 
@@ -892,10 +900,17 @@ def codeGen(nonTerminal, token):
 	elif nonTerminal == 'x5' :
 		print "we are at " + nonTerminal
 
+
+
+
 		funcName = semanticStack[-1]
 
 		if (funcName == 'output') :
 			return 0
+
+		semanticStack.pop()
+		semanticStack.append(returnAddress)
+
 
 		# programBlock.append(['PRINT',baseStackPointer,'',''])
 		# programBlockPointer = programBlockPointer + 1
