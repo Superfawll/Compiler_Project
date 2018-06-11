@@ -4,14 +4,14 @@
 	else {return fibbo(a - 1) + fibbo(a - 2);}
 }*/
 
-int a
+int a;
 
 int func(int b[]){
 	int x[11];
 	int a;
-	output(b[1]);
+	/*output(b[1]);*/
 	a = 9;
-	b[1] = 13;
+	/*b[1] = 13;*/
 	
 	while(0<a){
 		x[a] = 9 - a;
@@ -33,7 +33,7 @@ int func(int b[]){
 	else {
 		return 5;
 	}*/
-	output(b[1]);
+	/*output(b[1]);*/
 	return a;
 }
 
