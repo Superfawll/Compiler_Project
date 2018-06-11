@@ -5,17 +5,18 @@
 }*/
 
 int func(int b[], int c[]){
-	int x[11];
+	int x[3];
 	int a;
+/*	int b[2];*/
 	output(b[1]);
-	a = 9;
+	a = 3;
 	b[1] = 13;
 	
-	while(0<a){
+	/*while(0<a){
 		x[a] = 9 - a;
 		a = a - 1;
 		output(x[a]);
-	}
+	}*/
 	/*a = 9;
 	while (0<a){
 		x[a] = 9 - a;
@@ -32,7 +33,7 @@ int func(int b[], int c[]){
 		return 5;
 	}*/
 	output(b[1]);
-	return a;
+	return b[1] + 1;
 }
 
 
