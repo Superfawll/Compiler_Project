@@ -4,14 +4,14 @@
 	else {return fibbo(a - 1) + fibbo(a - 2);}
 }*/
 
-int func(int b[]) {
+int func(int b[], int c[]){
 	int x[11];
 	int a;
 	output(b[1]);
 	a = 9;
 	b[1] = 13;
 	
-	while (0<a){
+	while(0<a){
 		x[a] = 9 - a;
 		a = a - 1;
 		output(x[a]);
@@ -36,7 +36,7 @@ int func(int b[]) {
 }
 
 
-void main (void) {
+int main(void){
 	int v[2];
 	int a;
 	int b;
@@ -45,4 +45,8 @@ void main (void) {
 	output(v[1]);
 	b = 2;
 	output(func(v));
-}EOF
+
+	return 0;
+} EOF
+
+

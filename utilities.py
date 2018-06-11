@@ -6,6 +6,7 @@ keyword1 = r"(EOF|int|void|if|else|while|return)"
 keyword2 = r"(;|\[|\]|\(|\)|\{|\}|,|=(?!=)|<|==|\+|\*|-)"
 nonTerminals = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','x','t','u','s','w1','y','c','d','h','x2','x4','x7','x5','x6','k','x9','o','m','r1','p','w2','j','b','a','x3','x1','x8','l']
 terminals = ['(',')','*','+',',','-',';','<','=','[',']','e','f','g','i','n','q','r','v','w','z','{','}','$']
+sKey = ""
 
 contiguousSubString = ""
 tokens = []
@@ -137,6 +138,7 @@ def matchToken(candid):
 	global isNum
 	global lastFunc
 	global tokenSemaphore
+	global sKey
 
 	if (contiguousSubString[0] == '+' or contiguousSubString[0] == '-') and candid == "Keyword" :
 		if (tokens[-1][0] in numSignIndicator and tokens[-1][0] != ')') :
@@ -154,11 +156,11 @@ def matchToken(candid):
 			# if len(tokens) > 1 and tokens[len(tokens) - 1][0] == "=" and sKey == "=" :
 			# 	tokens[len(tokens) - 1] = ('q','==')
 			# else :
+			# print sKey
 			if sKey in mapping.keys() :
 				tokens.append((mapping[sKey], sKey))
 				tokenNum = tokenNum + 1
 				tokenSemaphore = 1
-				# print sKey
 			else :
 				tokens.append((sKey, sKey))
 				tokenNum = tokenNum + 1
@@ -439,9 +441,9 @@ def addVars(t):
 			# print relAddress
 			state2 = 0
 			if t == ")":
-				print "heyyyyyyyyy!"
+				# print "heyyyyyyyyy!"
 				functions[currentBlockNode.name].append(currentBlockNode.symbolTable.copy())
-				print functions[currentBlockNode.name]
+				# print functions[currentBlockNode.name]
 		else:
 			state2 = -1
 
@@ -536,11 +538,11 @@ def codeGen(nonTerminal, token):
 
 	# print str(semanticStack) + str(nonTerminal) 
 	# print programBlock
-	print semanticStack
+	# print semanticStack
 
 
 	if nonTerminal == 'a' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		# print str(isFirstFunc) + str(token[1])
 		if (not isFirstFunc) : 
 			addCode('')
@@ -548,7 +550,7 @@ def codeGen(nonTerminal, token):
 			isFirstFunc = True
 		elif token[1] == 'main' :
 			pointer = semanticStack.pop()
-			print pointer
+			# print pointer
 			programBlock[pointer] = ['JP',programBlockPointer,'','']
 
 			copyCode1(LOCALBASE, relAddress)
@@ -573,19 +575,19 @@ def codeGen(nonTerminal, token):
 		# print functions[token[1]]
 	
 	elif nonTerminal == 'b' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		# print semanticStack
 		# print programBlock
 		semanticStack.pop()
 	
 	elif nonTerminal == 'h' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		semanticStack.append(programBlockPointer)
 		# print "The semantic stack is at: " + str(semanticStack)
 		addCode('')
 	
 	elif nonTerminal == 'd' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 
 		programBlock[semanticStack[-1]] = ['JPF',semanticStack[-2],programBlockPointer + 1,'']
 		semanticStack.pop()
@@ -594,23 +596,23 @@ def codeGen(nonTerminal, token):
 		addCode('')
 	
 	elif nonTerminal == 'c' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		# print semanticStack[-1]
 		# print programBlock[semanticStack[-1]]
 		programBlock[semanticStack[-1]] = ['JP',programBlockPointer,'','']
 		semanticStack.pop()
 	# while
 	elif nonTerminal == 'j' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		semanticStack.append(programBlockPointer)
 	
 	elif nonTerminal == 'o' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		semanticStack.append(programBlockPointer)
 		addCode('')
 	
 	elif nonTerminal == 'l' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		programBlock[semanticStack[-1]] = ['JPF',semanticStack[-2],programBlockPointer + 1,'']
 		# print programBlock[semanticStack[-1]]
 		addCode(['JP',semanticStack[-3],'',''])
@@ -619,7 +621,7 @@ def codeGen(nonTerminal, token):
 		semanticStack.pop()
 	
 	elif nonTerminal == 'k' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		
 		t = getTemp()
 
@@ -633,7 +635,7 @@ def codeGen(nonTerminal, token):
 		programBlockPointer = programBlockPointer + 1
 
 	elif nonTerminal == 'm' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		# Return address of the function is pushed at the begining, so just assigning the return value to the return address!
 		addCode(['ASSIGN',semanticStack[-1],str(returnAddress),''])
 		t = getTemp()
@@ -651,7 +653,7 @@ def codeGen(nonTerminal, token):
 		programBlockPointer = programBlockPointer + 1
 	
 	elif nonTerminal == 'w2' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		# print semanticStack
 		addCode(['ASSIGN',semanticStack[-1],semanticStack[-2],''])
 		semanticStack.pop()
@@ -659,7 +661,7 @@ def codeGen(nonTerminal, token):
 		semanticStack.append(result)
 	
 	elif nonTerminal == 'r1' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		# temp = getTemp()
 		# temp1 = getTemp()
 		fv = findVar(token[1], currentBlockNode)
@@ -675,7 +677,7 @@ def codeGen(nonTerminal, token):
 		# print semanticStack
 	
 	elif nonTerminal == 'p' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		tempAddr1 = getTemp()
 		# tempAddr2 = getTemp()
 		# gett2 = getTemp()
@@ -717,7 +719,7 @@ def codeGen(nonTerminal, token):
 
 	
 	elif nonTerminal == 's' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		temp = getTemp()
 		firstOperand = semanticStack.pop()
 		operation = semanticStack.pop()
@@ -726,15 +728,15 @@ def codeGen(nonTerminal, token):
 		semanticStack.append(temp)
 	
 	elif nonTerminal == 't' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		semanticStack.append('less')
 	
 	elif nonTerminal == 'u' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		semanticStack.append('equal')
 	
 	elif nonTerminal == 'x1' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		temp = getTemp()
 		firstOperand = semanticStack.pop()
 		operation = semanticStack.pop()
@@ -743,17 +745,17 @@ def codeGen(nonTerminal, token):
 		semanticStack.append(temp)
 	
 	elif nonTerminal == 'w1' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		semanticStack.append('add')
 	
 	elif nonTerminal == 'x2' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		semanticStack.append('sub')
 	
 	# elif nonTerminal == 'x5' :
 	
 	elif nonTerminal == 'x6' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		# temporary = getTemp()
 		argsList = []		
 
@@ -770,8 +772,13 @@ def codeGen(nonTerminal, token):
 			if (not funcID in functions.keys()) :
 				print "Function " + funcID + " not defined" 
 
-			if (not len(argsList) == len(functions[funcID]) and functions[funcID][0] != 'void'):
-				print "Parameter count does not match!" + str(argsList) #TODO: Check parameter types
+			# print argsList
+			# print "***"
+			# print functions[funcID]
+			l1 = len(argsList)
+			l2 = 0 if len(functions[funcID]) == 2 else len(functions[funcID][2])
+			if l1 != l2:
+				print "Too " + ("Many" if l1 > l2 else "Few") + " Arguments To Call Function \'{}\':".format(funcID) + str(argsList) #TODO: Check parameter types
 
 		# programBlock.append(['PRINT',baseStackPointer,'',''])
 		# programBlockPointer = programBlockPointer + 1
@@ -844,7 +851,7 @@ def codeGen(nonTerminal, token):
 		addCode(['JP',jumpAddress,'',''])
 	
 	elif nonTerminal == 'x7' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		temp = getTemp()
 		firstOperand = semanticStack.pop()
 		secondOperand = semanticStack.pop()
@@ -852,7 +859,7 @@ def codeGen(nonTerminal, token):
 		semanticStack.append(temp)
 	
 	elif nonTerminal == 'x8' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		t = getTemp()
 		# if lastFunc != 'main':
 		# 	print functions[lastFunc]
@@ -886,12 +893,12 @@ def codeGen(nonTerminal, token):
 		addCode(['JP','@' + str(t),'',''])
 
 	elif nonTerminal == 'x9' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		semanticStack.append(token[1])
 		semanticStack.append('(')
 
 	elif nonTerminal == 'C' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		# print secondLastSymbol
 		# print token
 		if token[0] == 'i' :
@@ -910,7 +917,7 @@ def codeGen(nonTerminal, token):
 				quit()
 			i = fv[1][0]
 			if not fv[1][-1] == True:
-				print fv[1][-1]
+				# print fv[1][-1]
 				addCode(['ASSIGN','#0',i,''])
 			else :
 				fv = findVar(secondLastSymbol, currentBlockNode)
@@ -930,13 +937,13 @@ def codeGen(nonTerminal, token):
 				quit()
 			i = fv[1][0]
 			if not fv[1][-1] == True:
-				print fv[1][-1]
+				# print fv[1][-1]
 				addCode(['ASSIGN','#0',i,''])
 			else :
 				return 0
 
 	elif nonTerminal == 'x3' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		fv = findVar(token[1], currentBlockNode)
 		if fv is None:
 			print "Variable \'{}\' Not Found!".format(token[1])
@@ -951,11 +958,11 @@ def codeGen(nonTerminal, token):
 			addCode(['ASSIGN','#0','@' + str(t),''])
 
 	elif nonTerminal == 'x4' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 		semanticStack.append('#' + str(token[1]))
 
 	elif nonTerminal == 'x5' :
-		print "we are at " + nonTerminal
+		# print "we are at " + nonTerminal
 
 
 
