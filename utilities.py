@@ -626,7 +626,7 @@ def codeGen(nonTerminal, token):
 		programBlock.append(['SUB',baseStackPointer,'#1512',baseStackPointer])
 		programBlockPointer = programBlockPointer + 1
 
-		programBlock.append(['ASSIGN','@' + str(baseStackPointer),t,''])
+		programBlock.append(['ASSIGN',str(baseStackPointer),t,''])
 		programBlockPointer =  programBlockPointer + 1
 
 		programBlock.append(['JP','@' + str(t),'',''])
@@ -646,7 +646,7 @@ def codeGen(nonTerminal, token):
 		programBlock.append(['SUB',baseStackPointer,'#1512',baseStackPointer])
 		programBlockPointer = programBlockPointer + 1
 
-		programBlock.append(['ASSIGN','@' + str(baseStackPointer),t,''])
+		programBlock.append(['ASSIGN',str(baseStackPointer),t,''])
 		programBlockPointer =  programBlockPointer + 1
 
 		programBlock.append(['JP','@' + str(t),'',''])
@@ -856,7 +856,7 @@ def codeGen(nonTerminal, token):
 
 		addCode(['SUB',baseStackPointer,'#1512',baseStackPointer])
 
-		addCode(['ASSIGN','@' + str(baseStackPointer),t,''])
+		addCode(['ASSIGN',str(baseStackPointer),t,''])
 
 		# programBlock.append(['PRINT',t,'',''])
 		programBlockPointer = programBlockPointer + 1
