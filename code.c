@@ -3,9 +3,10 @@
 /*int var1;
 int a[10];*/
 
-void function(void) {
+void function(int b) {
 	int a;
 	a = 12;
+	output(b);
 }
 
 void function2(int o, int w, int d) {
@@ -24,8 +25,13 @@ void function2(int o, int w, int d) {
 		a = a + 1;
 	}
 	x = 0;
-
-	function();
+	a = 0;
+	while (a<3){
+		output(b[a]);
+		a = a + 1;
+	}
+	b[0] = 12;
+	function(b[0]);
 
 	output(x);
 
@@ -67,7 +73,7 @@ void main(void){/**/
 	int c;
 	int a;
 	int x[3];
-	/*int u[19];*/
+	int u[19];
 	a = 2;
 	x[a] = 1 * -2 + (1+2);
 	/*output(x[2]);*/

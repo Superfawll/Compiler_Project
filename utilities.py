@@ -123,7 +123,7 @@ def getTemp():
 	global tempAddress
 
 	a = tempAddress
-	tempAddress = tempAddress + 1
+	tempAddress = tempAddress + 4
 	return a
 
 
@@ -664,7 +664,7 @@ def codeGen(nonTerminal, token):
 	
 	elif nonTerminal == 'x6' :
 		print "we are at " + nonTerminal
-		temporary = getTemp()
+		# temporary = getTemp()
 		argsList = []		
 
 		while not semanticStack[-1] == '(' :
@@ -684,11 +684,11 @@ def codeGen(nonTerminal, token):
 			if (not len(argsList) == len(functions[funcID]) and functions[funcID][0] != 'void'):
 				print "Parameter count does not match!" + str(argsList) #TODO: Check parameter types
 
-		programBlock.append(['PRINT',baseStackPointer,'',''])
-		programBlockPointer = programBlockPointer + 1
+		# programBlock.append(['PRINT',baseStackPointer,'',''])
+		# programBlockPointer = programBlockPointer + 1
 
-		programBlock.append(['PRINT',stackPointer,'',''])
-		programBlockPointer = programBlockPointer + 1
+		# programBlock.append(['PRINT',stackPointer,'',''])
+		# programBlockPointer = programBlockPointer + 1
 
 		programBlock.append(['ASSIGN',str(returnAddress),'@' + str(stackPointer),''])
 		programBlockPointer = programBlockPointer + 1
@@ -711,8 +711,8 @@ def codeGen(nonTerminal, token):
 		iterator = LOCALBASE
 
 		while iterator < relAddress :
-			programBlock.append(['PRINT',stackPointer,'',''])
-			programBlockPointer = programBlockPointer + 1
+			# programBlock.append(['PRINT',stackPointer,'',''])
+			# programBlockPointer = programBlockPointer + 1
 			# if (not argsList[2] == 'arr') :
 			programBlock.append(['ASSIGN',iterator,'@' + str(stackPointer),''])
 			programBlockPointer = programBlockPointer + 1
@@ -744,9 +744,9 @@ def codeGen(nonTerminal, token):
 
 		iterator = TEMPBASE		
 		
-		while iterator < tempAddress :
-			programBlock.append(['PRINT',stackPointer,'',''])
-			programBlockPointer = programBlockPointer + 1
+		while iterator < tempAddress - 4:
+			# programBlock.append(['PRINT',stackPointer,'',''])
+			# programBlockPointer = programBlockPointer + 1
 			# if (not argsList[2] == 'arr') :
 			programBlock.append(['ASSIGN',iterator,'@' + str(stackPointer),''])
 			programBlockPointer = programBlockPointer + 1
@@ -785,7 +785,7 @@ def codeGen(nonTerminal, token):
 		jumpAddress = functions[funcID][1]
 
 		programBlock.append(['JP',jumpAddress,'',''])
-		# programBlockPointer = programBlockPointer + 1
+		programBlockPointer = programBlockPointer + 1
 	
 	elif nonTerminal == 'x7' :
 		print "we are at " + nonTerminal
@@ -824,7 +824,10 @@ def codeGen(nonTerminal, token):
 		programBlock.append(['SUB',baseStackPointer,'#1512',baseStackPointer])
 		programBlockPointer = programBlockPointer + 1
 
-		programBlock.append(['JP',str(baseStackPointer),'',''])
+		programBlock.append(['ASSIGN','@' + str(baseStackPointer),t,''])
+		programBlockPointer =  programBlockPointer + 1
+
+		programBlock.append(['JP','@' + str(t),'',''])
 		programBlockPointer = programBlockPointer + 1
 
 	elif nonTerminal == 'x9' :
@@ -847,6 +850,7 @@ def codeGen(nonTerminal, token):
 				secondLastSymbol = lastSymbol
 			i = (findVar(secondLastSymbol, currentBlockNode))[1][0]
 			if not (findVar(secondLastSymbol, currentBlockNode))[1][-1] == True:
+				print (findVar(secondLastSymbol, currentBlockNode))[1][-1]
 				programBlock.append(['ASSIGN','#0',i,''])
 				programBlockPointer =  programBlockPointer + 1
 			else :
@@ -860,8 +864,12 @@ def codeGen(nonTerminal, token):
 					programBlockPointer =  programBlockPointer + 1
 		else :
 			i = (findVar(lastSymbol, currentBlockNode))[1][0]
-			programBlock.append(['ASSIGN','#0',i,''])
-			programBlockPointer =  programBlockPointer + 1
+			if not (findVar(lastSymbol, currentBlockNode))[1][-1] == True:
+				print (findVar(lastSymbol, currentBlockNode))[1][-1]
+				programBlock.append(['ASSIGN','#0',i,''])
+				programBlockPointer =  programBlockPointer + 1
+			else :
+				return 0
 
 	elif nonTerminal == 'x3' :
 		print "we are at " + nonTerminal
@@ -869,6 +877,13 @@ def codeGen(nonTerminal, token):
 		arrAddress = (findVar(token[1], currentBlockNode))[1][1]
 		programBlock.append(['ASSIGN','#' + str(arrAddress),i,''])
 		programBlockPointer =  programBlockPointer + 1
+		num = (findVar(token[1], currentBlockNode))[1][-2]
+		t = getTemp()
+		for index in range(num) :
+			programBlock.append(['ADD','#' + str(index * 4),str(i),t])
+			programBlockPointer =  programBlockPointer + 1
+			programBlock.append(['ASSIGN','#0','@' + str(t),''])
+			programBlockPointer =  programBlockPointer + 1
 
 	elif nonTerminal == 'x4' :
 		print "we are at " + nonTerminal
@@ -882,11 +897,11 @@ def codeGen(nonTerminal, token):
 		if (funcName == 'output') :
 			return 0
 
-		programBlock.append(['PRINT',baseStackPointer,'',''])
-		programBlockPointer = programBlockPointer + 1
+		# programBlock.append(['PRINT',baseStackPointer,'',''])
+		# programBlockPointer = programBlockPointer + 1
 
-		programBlock.append(['PRINT',stackPointer,'',''])
-		programBlockPointer = programBlockPointer + 1
+		# programBlock.append(['PRINT',stackPointer,'',''])
+		# programBlockPointer = programBlockPointer + 1
 
 		programBlock.append(['ADD',baseStackPointer,'#' + str(12),baseStackPointer])
 		programBlockPointer = programBlockPointer + 1
@@ -897,8 +912,8 @@ def codeGen(nonTerminal, token):
 		iterator = LOCALBASE
 
 		while iterator < relAddress :
-			programBlock.append(['PRINT',stackPointer,'',''])
-			programBlockPointer = programBlockPointer + 1
+			# programBlock.append(['PRINT',stackPointer,'',''])
+			# programBlockPointer = programBlockPointer + 1
 			# if (not argsList[2] == 'arr') :
 			programBlock.append(['ASSIGN','@' + str(stackPointer),iterator,''])
 			programBlockPointer = programBlockPointer + 1
@@ -911,7 +926,10 @@ def codeGen(nonTerminal, token):
 		programBlock.append(['ADD',stackPointer,'#' + str(ARRAYBASE),stackPointer])
 		programBlockPointer = programBlockPointer + 2
 		
-		iterator = ARRAYBASE		
+		iterator = ARRAYBASE
+
+		print ARRAYBASE 
+		print relArrAddress
 		
 		while iterator < relArrAddress :
 			# if (not argsList[2] == 'arr') :
@@ -927,10 +945,13 @@ def codeGen(nonTerminal, token):
 		programBlockPointer = programBlockPointer + 2
 
 		iterator = TEMPBASE		
+
+		print TEMPBASE
+		print tempAddress
 		
-		while iterator < tempAddress :
-			programBlock.append(['PRINT',stackPointer,'',''])
-			programBlockPointer = programBlockPointer + 1
+		while iterator < tempAddress - 4  :
+			# programBlock.append(['PRINT',stackPointer,'',''])
+			# programBlockPointer = programBlockPointer + 1
 			# if (not argsList[2] == 'arr') :
 			programBlock.append(['ASSIGN','@' + str(stackPointer),iterator,''])
 			programBlockPointer = programBlockPointer + 1
