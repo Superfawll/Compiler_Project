@@ -97,7 +97,6 @@ programBlock = []
 programBlock.append(['ASSIGN','#5000',1000000,'']) # Stack pointer! 
 programBlock.append(['ASSIGN','#5000',2000000,'']) # Inside of stack pointer! 
 programBlock.append(['ASSIGN','#0',3000000,'']) # Return value
-programBlock.append(['ASSIGN','#0',4000000,'']) # Control link
 programBlock.append(['ASSIGN','#10000000',4000000,'']) # Control link
 programBlock.append(['ASSIGN','#0',5000000,'']) # Access link
 programBlock.append(['ASSIGN','#0',10000000,''])
@@ -310,6 +309,7 @@ def scopeChecking(t):
 		if t == "(":
 			# Checking whether main is the last function declaration or not!
 			if "main" in functions.keys() and lastSymbol != "main":
+				return "\'{}\' Is Defined After \'main\'".format(lastSymbol)
 			# Checking whether the function defined has a duplicate name as another function or not!
 			if lastSymbol in functions.keys():
 				return "Duplicate Function Definition: \'{}\' Already Exists!".format(lastSymbol)
