@@ -98,8 +98,10 @@ programBlock.append(['ASSIGN','#5000',1000000,'']) # Stack pointer!
 programBlock.append(['ASSIGN','#5000',2000000,'']) # Inside of stack pointer! 
 programBlock.append(['ASSIGN','#0',3000000,'']) # Return value
 programBlock.append(['ASSIGN','#0',4000000,'']) # Control link
+programBlock.append(['ASSIGN','#10000000',4000000,'']) # Control link
 programBlock.append(['ASSIGN','#0',5000000,'']) # Access link
-programBlockPointer = 5
+programBlock.append(['ASSIGN','#0',10000000,''])
+programBlockPointer = 6
 tokenIterator = 0
 lastFunc = ''
 isFirstFunc = False
@@ -255,14 +257,17 @@ def getActionTable(file):
 
 def getFollowSet(file):
   followSet = {}
+  #DEBUGGED
   f = {"A": "$", "B": "vgz", "C": "rvfgw(iz{;}n", "D": "rfvwg(i{;}n", "E": "i", "F": "vgz", "G": "vgz", "H": "efg(inrvwz{;}", "I": "),", "J": "rfw(i{;}n", "K": "refw(i{;}n", "L": "refw(i{;}n", "M": "refw(i{;}n", "N": ");,]", "O": "q);+<,-]", "P": ");,]", "Q": "refw(i{;}n", "R": "refw(i{;}n", "S": "q)*;+<,-]", "T": ")", "U": "),", "V": "q)*;+<,=-]", "W": "(in", "X": "q)*;+<,-]", "Y": "(in", "Z": "q)*;+<,-]", "À": "),", "Â": "(in", "Ã": "(in", "Å": ");,]", "Æ": "(in", "È": ")", "É": "refw(i{;}n", "Ê": "e", "Ë": ")", "Ì": "(in", "Í": "q)*;+<,-]", "Î": "q)*;+<,-]", "Ï": "q)*;+<,-]", "Õ": ")", "Ö": "refw(i{;}n", "Ø": "(i)n", "Ù": ")", "Ú": "refw(i{;}n", "Û": "q)*[;+<,=-]", "Ü": "]", "Ā": ");,]", "Ē": "(in", "Ė": "refw(i{;}n", "Ę": "vg", "Ī": "rvfgw(iz{;}n", "Į": "q);+<,-]", "Œ": "vgz", "Ū": "refw(i{;}n"}
-  m = {"a"  : "Ę", "b"  : "Ė", "c"  : "É", "d"  : "Ê", "h"  : "Ë", "j"  : "Ē", "k"  : "Ö", "l"  : "Ū", "m"  : "Ú", "o"  : "Ù", "p"  : "Ü", "r1" : "Û", "s"  : "Å", "t"  : "Â", "u"  : "Ã", "w1" : "Æ", "w2" : "Ā", "x1" : "Į", "x2" : "Ì", "x3" : "Ī", "x4" : "Í", "x5" : "Ï", "x6" : "Õ", "x7" : "Î", "x"  : "À", "y"  : "È"}
+  m = {"a"  : "Ę", "b"  : "Ė", "c"  : "É", "d"  : "Ê", "h"  : "Ë", "j"  : "Ē", "k"  : "Ö", "l"  : "Ū", "m"  : "Ú", "o"  : "Ù", "p"  : "Ü", "r1" : "Û", "s"  : "Å", "t"  : "Â", "u"  : "Ã", "w1" : "Æ", "w2" : "Ā", "x1" : "Į", "x2" : "Ì", "x3" : "Ī", "x4" : "Í", "x5" : "Ï", "x6" : "Õ", "x7" : "Î", "x9" : "Ø", "x8" : "Œ", "x"  : "À", "y"  : "È"}
+  #DEBUGGED
   for k in sorted(f.keys()):
     m[k] = k
     if k == "Z":
       break
   for mm in sorted(m.keys()):
     followSet[mm] = f[m[mm]]
+    # print mm + "\t" + f[m[mm]]
 
   return followSet
 
@@ -305,10 +310,9 @@ def scopeChecking(t):
 		if t == "(":
 			# Checking whether main is the last function declaration or not!
 			if "main" in functions.keys() and lastSymbol != "main":
-				return "\'{}\'' Is Defined After \'main\'".format(lastSymbol)
 			# Checking whether the function defined has a duplicate name as another function or not!
 			if lastSymbol in functions.keys():
-				return "Duplicate Function Definition: \'{}\'' Already Exists!".format(lastSymbol)
+				return "Duplicate Function Definition: \'{}\' Already Exists!".format(lastSymbol)
 			else:
 				functions[lastSymbol] = [lastType, -1]
 			# Inserting the new identifier inside of the symbol table linked-list
@@ -426,7 +430,7 @@ def addVars(t):
 			isArray = True
 		elif t == ";" or t == ")" or t == ",":
 			if currentBlockNode.duplicate(lastSymbol):
-				return "Duplicate Variable Definition: \'{}\'' Already Exists In This Scope!".format(lastSymbol)
+				return "Duplicate Variable Definition: \'{}\' Already Exists In This Scope!".format(lastSymbol)
 			if lastType == "void":
 				return "Variable \'{}\' Can Not Be Defined Of Type \'void\'".format(lastSymbol)
 
@@ -562,13 +566,13 @@ def codeGen(nonTerminal, token):
 
 			addCode(['ASSIGN',baseStackPointer,stackPointer,''])
 			addCode(['ADD',stackPointer,'#' + str(ARRAYBASE),stackPointer])
-			# addCode(['ADD',stackPointer,'#08',stackPointer])
+			# addCode(['ADD',stackPointer,'#12',stackPointer])
 			
 			copyCode1(ARRAYBASE, relArrAddress)
 
 			addCode(['ASSIGN',baseStackPointer,stackPointer,''])
 			addCode(['ADD',stackPointer,'#' + str(TEMPBASE),stackPointer])
-			# addCode(['ADD',stackPointer,'#08',stackPointer])
+			# addCode(['ADD',stackPointer,'#12',stackPointer])
 
 			copyCode1(TEMPBASE, tempAddress - 4)
 
@@ -630,11 +634,11 @@ def codeGen(nonTerminal, token):
 		
 		t = getTemp()
 
-		programBlock.append(['SUB',baseStackPointer,'#1508',baseStackPointer])
+		programBlock.append(['SUB',baseStackPointer,'#1512',baseStackPointer])
 		programBlockPointer = programBlockPointer + 1
 
 		programBlock.append(['ASSIGN',str(baseStackPointer),t,''])
-		programBlockPointer =  programBlockPointer + 1
+		programBlockPointer = programBlockPointer + 1
 
 		programBlock.append(['JP','@' + str(t),'',''])
 		programBlockPointer = programBlockPointer + 1
@@ -643,7 +647,9 @@ def codeGen(nonTerminal, token):
 		# print "we are at " + nonTerminal
 		# Return address of the function is pushed at the begining, so just assigning the return value to the return address!
 		addCode(['ASSIGN',semanticStack[-1],str(returnAddress),''])
-		t = getTemp()
+		# t = getTemp()
+		# addCode(['ASSIGN',str(controlLink),'@' + str(stackPointer),''])
+		# addCode(['ADD',stackPointer,'#4',stackPointer])
 		# programBlock.append(['ADD',stackPointer,'#4',stackPointer])
 		# # programBlock.append(['ASSIGN',temporary,500,''])
 		# programBlockPointer = programBlockPointer + 1
@@ -653,6 +659,8 @@ def codeGen(nonTerminal, token):
 		
 
 		semanticStack.pop()
+
+		# addCode(['PRINT',str(controlLink),'',''])
 
 		programBlock.append(['JP','@' + str(controlLink),'',''])
 		programBlockPointer = programBlockPointer + 1
@@ -704,7 +712,7 @@ def codeGen(nonTerminal, token):
 		# 				semanticStack.append('@' + str(tempAddr1))
 
 		# 	# elif (currentBlockNode.name == ''):
-		# 	# 	addCode(['ADD','#5008',address,tempAddr1])
+		# 	# 	addCode(['ADD','#5012',address,tempAddr1])
 		# 	# 	addCode(['ADD',str(temp),tempAddr1,tempAddr1])
 		# 	# 	# programBlock.append(['ADD',tempAddr1,temp,tempAddr2])
 		# 	# 	semanticStack.append('@' + str(tempAddr1))
@@ -802,8 +810,8 @@ def codeGen(nonTerminal, token):
 		# programBlockPointer =  programBlockPointer + 1
 
 		# addCode(['ASSIGN',str(controlLink),'@' + str(stackPointer),''])
-		# addCode(['ASSIGN','#' + str(programBlockPointer + 3), str(controlLink),''])
-		# addCode(['ADD',stackPointer,'#4',stackPointer])
+		addCode(['ASSIGN',str(controlLink),'@' + str(stackPointer),''])
+		addCode(['ADD',stackPointer,'#4',stackPointer])
 
 		# programBlock.append(['PRINT',str(returnAddress),'',''])
 		# programBlockPointer =  programBlockPointer + 1
@@ -814,17 +822,35 @@ def codeGen(nonTerminal, token):
 		# programBlock.append(['PRINT',str(stackPointer),'',''])
 		# programBlockPointer =  programBlockPointer + 1
 
+		programBlock.append(['PRINT',str(stackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
+
+		programBlock.append(['PRINT',str(baseStackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
+
 		copyCode1(LOCALBASE, relAddress)
 
 		addCode(['ASSIGN',baseStackPointer,stackPointer,''])
 		addCode(['ADD',stackPointer,'#' + str(ARRAYBASE),stackPointer])
-		addCode(['ADD',stackPointer,'#08',stackPointer])
-		
+		addCode(['ADD',stackPointer,'#12',stackPointer])
+
+		programBlock.append(['PRINT',str(stackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
+
+		programBlock.append(['PRINT',str(baseStackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
+
 		copyCode1(ARRAYBASE, relArrAddress)
 
 		addCode(['ASSIGN',baseStackPointer,stackPointer,''])
 		addCode(['ADD',stackPointer,'#' + str(TEMPBASE),stackPointer])
-		addCode(['ADD',stackPointer,'#08',stackPointer])
+		addCode(['ADD',stackPointer,'#12',stackPointer])
+
+		programBlock.append(['PRINT',str(stackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
+
+		programBlock.append(['PRINT',str(baseStackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
 
 		copyCode1(TEMPBASE, tempAddress - 4)
 
@@ -840,24 +866,28 @@ def codeGen(nonTerminal, token):
 		# programBlockPointer = programBlockPointer + 1
 
 		addCode(['ASSIGN',baseStackPointer,stackPointer,''])
-		addCode(['ADD',stackPointer,'#' + str(1508),stackPointer])
+		addCode(['ADD',stackPointer,'#' + str(1512),stackPointer])
 
 		# programBlock.append(['PRINT',str(baseStackPointer),'',''])
 		# programBlockPointer =  programBlockPointer + 1
 
 		addCode(['ASSIGN','@' + str(baseStackPointer), str(accessLink),''])
-		addCode(['ADD',baseStackPointer,'#' + str(1508),baseStackPointer])
+		addCode(['ADD',baseStackPointer,'#' + str(1512),baseStackPointer])
 
 		# programBlock.append(['PRINT',str(baseStackPointer),'',''])
 		# programBlockPointer =  programBlockPointer + 1
 
-		addCode(['ASSIGN','#' + str(programBlockPointer + 3), str(controlLink),''])
+		# addCode(['ASSIGN','#' + str(programBlockPointer + 1), str(controlLink),''])
 
-		# programBlock.append(['PRINT',str(controlLink),'',''])
+		programBlock.append(['ASSIGN','#' + str(programBlockPointer + 2), str(controlLink),''])
+		programBlockPointer =  programBlockPointer + 1
+
+		# programBlock.append(['PRINT',str(baseStackPointer),'',''])
 		# programBlockPointer =  programBlockPointer + 1
 
 		jumpAddress = functions[funcID][1]
-		addCode(['JP',jumpAddress,'',''])
+		programBlock.append(['JP',jumpAddress,'',''])
+		programBlockPointer =  programBlockPointer + 1
 	
 	elif nonTerminal == 'x7' :
 		# print "we are at " + nonTerminal
@@ -892,12 +922,12 @@ def codeGen(nonTerminal, token):
 		# 	programBlock.append(['JP',92,'',''])
 		# 	programBlockPointer = programBlockPointer + 1
 
-		addCode(['SUB',baseStackPointer,'#1508',baseStackPointer])
+		addCode(['SUB',baseStackPointer,'#1512',baseStackPointer])
 
 		addCode(['ASSIGN',str(baseStackPointer),t,''])
 
 		# programBlock.append(['PRINT',t,'',''])
-		programBlockPointer = programBlockPointer + 1
+		# programBlockPointer = programBlockPointer + 1
 
 		addCode(['JP','@' + str(t),'',''])
 
@@ -973,7 +1003,7 @@ def codeGen(nonTerminal, token):
 	elif nonTerminal == 'x5' :
 		# print "we are at " + nonTerminal
 
-
+		temp = getTemp()
 
 
 		funcName = semanticStack[-1]
@@ -982,7 +1012,11 @@ def codeGen(nonTerminal, token):
 			return 0
 
 		semanticStack.pop()
-		semanticStack.append(returnAddress)
+
+		programBlock.append(['ASSIGN',returnAddress,temp,''])
+		programBlockPointer = programBlockPointer + 1
+
+		semanticStack.append(temp)
 
 
 		# programBlock.append(['PRINT',baseStackPointer,'',''])
@@ -994,8 +1028,24 @@ def codeGen(nonTerminal, token):
 		programBlock.append(['SUB',baseStackPointer,'#1500',baseStackPointer])
 		programBlockPointer = programBlockPointer + 1
 
-		# programBlock.append(['PRINT','@' + str(baseStackPointer),'',''])
+		# programBlock.append(['PRINT',str(baseStackPointer),'',''])
+		# programBlockPointer = programBlockPointer + 1
+
+		programBlock.append(['SUB',baseStackPointer,'#8',baseStackPointer])
+		programBlockPointer = programBlockPointer + 1
+
+		addCode(['ASSIGN','@'+str(baseStackPointer),controlLink,''])
+
+		programBlock.append(['ADD',baseStackPointer,'#8',baseStackPointer])
+		programBlockPointer = programBlockPointer + 1
+
+		# programBlock.append(['PRINT',str(baseStackPointer),'',''])
 		# programBlockPointer =  programBlockPointer + 1
+		# addCode(['ADD',baseStackPointer,'#4',baseStackPointer])
+		# programBlock.append(['PRINT',str(baseStackPointer),'',''])
+		# programBlockPointer =  programBlockPointer + 1
+		# addCode(['ASSIGN','@' + str(baseStackPointer),str(stackPointer),'',''])
+		# addCode(['ADD',baseStackPointer,'#4',baseStackPointer])
 
 		# addCode(['ADD',baseStackPointer,'#4',baseStackPointer])
 
@@ -1021,20 +1071,40 @@ def codeGen(nonTerminal, token):
 		# programBlock.append(['PRINT',str(baseStackPointer),'',''])
 		# programBlockPointer =  programBlockPointer + 1
 
-		# addCode(['ADD',baseStackPointer,'#' + str(08),baseStackPointer])
+		# addCode(['ADD',baseStackPointer,'#' + str(12),baseStackPointer])
 		addCode(['ASSIGN',baseStackPointer,stackPointer,''])
 
+		programBlock.append(['PRINT',str(stackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
 
+		programBlock.append(['PRINT',str(baseStackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
 
 		copyCode2(LOCALBASE, relAddress)
 		addCode(['ASSIGN',baseStackPointer,stackPointer,''])
 		addCode(['ADD',stackPointer,'#' + str(ARRAYBASE),stackPointer])
 		
+		programBlock.append(['PRINT',str(stackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
+
+		programBlock.append(['PRINT',str(baseStackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
+
 		copyCode2(ARRAYBASE, relArrAddress)
 		addCode(['ASSIGN',baseStackPointer,stackPointer,''])
 		addCode(['ADD',stackPointer,'#' + str(TEMPBASE),stackPointer])
 
-		copyCode2(TEMPBASE, tempAddress - 4)	
+		copyCode2(TEMPBASE, tempAddress - 8)	
+
+		programBlock.append(['PRINT',str(stackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
+
+		programBlock.append(['PRINT',str(baseStackPointer),'',''])
+		programBlockPointer = programBlockPointer + 1
+
+		programBlock.append(['SUB',baseStackPointer,'#12',baseStackPointer])
+		programBlockPointer = programBlockPointer + 1
+		addCode(['ASSIGN',baseStackPointer,stackPointer,''])
 
 
 	with open('output.txt', 'w') as program :
